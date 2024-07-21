@@ -2,6 +2,7 @@
     "files.associations": {
         ".env*": "dotenv",
         "processo.h": "c",
-        "functions.h": "c"
+        "functions.h": "c",
+        "stdio.h": "c"
     }
 }
