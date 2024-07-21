@@ -1,4 +1,4 @@
-#include "../include/functions.h"
+#include "./include/functions.h"
 
 int main() {
     int num_processos;
