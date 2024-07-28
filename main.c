@@ -1,21 +1,24 @@
-#include "./include/functions.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include "./include/control_process.h"
 
-int main() {
-    int num_processos;
-    Processo* processos = ler_dados_arquivo("processos.txt", &num_processos);
+int main(int argc, char *argv[]) {
+    // Verifica se argumentos foram passados, se necessário
+    if (argc < 2) {
+        fprintf(stderr, "Uso: %s <arquivo_de_entrada>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
 
-    printf("FCFS:\n");
-    escalonador_fcfs(processos, num_processos);
-    calcular_metricas(processos, num_processos);
+    printf("Iniciando o processo de controle com o arquivo: %s\n", argv[1]);
 
-    printf("\nSJF:\n");
-    escalonador_sjf(processos, num_processos);
-    calcular_metricas(processos, num_processos);
+    // Cria o processo de controle
+    if (start_control_process() == -1) {
+        fprintf(stderr, "Falha ao iniciar o processo de controle\n");
+        return EXIT_FAILURE;
+    }
 
-    printf("\nRound-Robin (quantum = 2):\n");
-    escalonador_rr(processos, num_processos, 2);
-    calcular_metricas(processos, num_processos);
-
-    free(processos);
-    return 0;
+    printf("Processo de controle finalizado com sucesso.\n");
+    return EXIT_SUCCESS;
 }
