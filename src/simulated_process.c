@@ -13,20 +13,17 @@ int create_simulated_process(int process_id, const char *commands[]) {
     }
 
     if (pid == 0) {
-        // Código do processo simulado
         printf("Processo simulado iniciado com PID: %d, ID: %d\n", getpid(), process_id);
         
-        // Simulação de execução dos comandos
         for (int i = 0; commands[i] != NULL; i++) {
             // TODO - Implementar a execução dos comandos
             printf("Executando comando: %s\n", commands[i]);
-            sleep(1); // Simula a execução
+            sleep(1);
         }
 
         printf("Processo simulado com PID %d terminado\n", getpid());
         exit(EXIT_SUCCESS);
     } else {
-        // Processo pai continua
-        return pid; // Retorna o PID do processo simulado
+        return pid; 
     }
 }

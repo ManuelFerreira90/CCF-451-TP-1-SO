@@ -39,17 +39,16 @@ void handle_F(int process_id) {
     Process *parent = &process_table[process_id];
     Process *new_process = &process_table[process_count++];
     
-    // Copiar o estado do processo pai
-    new_process->id = process_count; // Novo ID para o processo filho
+    new_process->id = process_count; 
     new_process->num_vars = parent->num_vars;
     memcpy(new_process->vars, parent->vars, parent->num_vars * sizeof(int));
-    new_process->pc = parent->pc; // Continua a partir da próxima instrução
-    new_process->state = 0; // Pronto
+    new_process->pc = parent->pc; 
+    new_process->state = 0; 
 }
 
 void handle_R(int process_id) {
     // TODO - Implementar a lógica para carregar o programa do arquivo
-    process_table[process_id].pc = 0; // Reinicia o contador de programa
+    process_table[process_id].pc = 0;
 }
 
 void handle_command(char *cmd) {

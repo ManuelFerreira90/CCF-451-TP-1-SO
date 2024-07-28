@@ -15,14 +15,12 @@ int start_control_process()
     int fd[2];
     pid_t pid;
 
-    // Criação do pipe
     if (pipe(fd) == -1)
     {
         perror("pipe");
         return -1;
     }
 
-    // Criação do processo
     pid = fork();
     if (pid < 0)
     {
@@ -30,20 +28,19 @@ int start_control_process()
         return -1;
     }
 
-    if (pid == 0) // Processo filho (Gerenciador de Processos)
+    if (pid == 0)
     {
-        close(fd[PIPE_WRITE]); // Fecha a extremidade de escrita do pipe
-        dup2(fd[PIPE_READ], STDIN_FILENO); // Redireciona a entrada padrão para ler do pipe
-        close(fd[PIPE_READ]); // Fecha a extremidade de leitura do pipe
+        close(fd[PIPE_WRITE]);
+        dup2(fd[PIPE_READ], STDIN_FILENO); 
+        close(fd[PIPE_READ]);
 
-        // Executa o gerenciador de processos
-        execl("./process_manager", "process_manager", NULL); // Atualiza o caminho
-        perror("execl"); // Se execl falhar
+        execl("./process_manager", "process_manager", NULL); 
+        perror("execl"); 
         return -1;
     }
-    else // Processo pai (Controle)
+    else 
     {
-        close(fd[PIPE_READ]); // Fecha a extremidade de leitura do pipe
+        close(fd[PIPE_READ]);
 
         FILE *input = fopen("../entry/input.txt", "r");
         if (!input)
@@ -55,12 +52,12 @@ int start_control_process()
         char line[MAX_CMD_LEN];
         while (fgets(line, sizeof(line), input))
         {
-            write(fd[PIPE_WRITE], line, strlen(line)); // Envia comandos pelo pipe
+            write(fd[PIPE_WRITE], line, strlen(line)); 
         }
 
         fclose(input);
-        close(fd[PIPE_WRITE]); // Fecha a extremidade de escrita do pipe
-        wait(NULL); // Espera o processo filho terminar
+        close(fd[PIPE_WRITE]);
+        wait(NULL);
     }
 
     return 0;
