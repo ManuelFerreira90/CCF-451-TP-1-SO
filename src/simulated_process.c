@@ -28,7 +28,7 @@ void handle_N(int process_id, int n) {
 }
 
 void handle_D(int process_id, int x) {
-    if (x >= process_table[process_id].num_vars) {
+    if (x < 0 || x >= process_table[process_id].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
@@ -37,7 +37,7 @@ void handle_D(int process_id, int x) {
 }
 
 void handle_V(int process_id, int x, int value) {
-    if (x >= process_table[process_id].num_vars) {
+    if (x < 0 || x >= process_table[process_id].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
@@ -46,7 +46,7 @@ void handle_V(int process_id, int x, int value) {
 }
 
 void handle_A(int process_id, int x, int value) {
-    if (x >= process_table[process_id].num_vars) {
+    if (x < 0 || x >= process_table[process_id].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
@@ -55,7 +55,7 @@ void handle_A(int process_id, int x, int value) {
 }
 
 void handle_S(int process_id, int x, int value) {
-    if (x >= process_table[process_id].num_vars) {
+    if (x < 0 || x >= process_table[process_id].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
