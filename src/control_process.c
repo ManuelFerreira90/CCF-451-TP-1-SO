@@ -34,7 +34,7 @@ int start_control_process()
         dup2(fd[PIPE_READ], STDIN_FILENO); 
         close(fd[PIPE_READ]);
 
-        execl("./process_manager", "process_manager", NULL); 
+        execl("./bin/process_manager", "process_manager", NULL); 
         perror("execl"); 
         return -1;
     }
