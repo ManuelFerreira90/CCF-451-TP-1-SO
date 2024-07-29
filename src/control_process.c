@@ -42,7 +42,7 @@ int start_control_process()
     {
         close(fd[PIPE_READ]);
 
-        FILE *input = fopen("../entry/input.txt", "r");
+        FILE *input = fopen("./entry/input.txt", "r");
         if (!input)
         {
             perror("fopen");

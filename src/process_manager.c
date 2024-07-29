@@ -94,3 +94,11 @@ void handle_command(char *cmd) {
     }
 }
 
+int main() {
+    char cmd[256];
+    while (fgets(cmd, sizeof(cmd), stdin)) {
+        handle_command(cmd);
+    }
+    printf("Process manager finished\n");
+    return 0;
+}

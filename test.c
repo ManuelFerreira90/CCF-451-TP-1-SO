@@ -4,7 +4,7 @@
 
 int main()
 {
-      execl("/bin/ls","ls","test.c",NULL) ;
+      execl("/home/sandrin/Documentos/Github/TP-2_SO/src/process_manager","process_manager","process_manager.o",NULL) ;
       printf ("Eu ainda nao estou morto\n") ;
       exit(0);
 } 
