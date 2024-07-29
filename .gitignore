@@ -1,5 +1,5 @@
 exec
 exe
 main
-process_manager
-vscode
+./src/process_manager
+.vscode
