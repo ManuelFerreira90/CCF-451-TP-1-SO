@@ -32,7 +32,7 @@ int main(void) {
 
     /* Processo Pai */
     if (pid > 0) {
-        /* No pai, vamos ler comandos e escrever no Pipe */
+        /* No pai, ler comandos e escrever no Pipe */
         close(fd[0]); // Fechar a leitura do Pipe no lado do pai
 
         printf("Escolha a entrada (a: entrada padrão, f: arquivo): ");
@@ -81,7 +81,7 @@ int main(void) {
         char str_recebida[BUFFER];
         ssize_t bytes_read;
 
-        /* No filho, vamos ler do Pipe e processar comandos */
+        /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
 
         // Mensagem de depuração
@@ -91,7 +91,7 @@ int main(void) {
             str_recebida[bytes_read] = '\0'; // Garantir que a string seja terminada
             printf("Comando recebido: %c\n", str_recebida[0]);
 
-            // Aqui você pode adicionar lógica para processar cada comando
+            // TODO adicionar lógica para processar cada comando
             switch (str_recebida[0]) {
                 case 'U':
                     printf("Comando 'U' recebido: Fim de uma unidade de tempo.\n");
