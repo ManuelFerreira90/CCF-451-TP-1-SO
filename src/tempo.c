@@ -1,5 +1,6 @@
 #include "../headers/tempo.h"
 
+
 void inicializarTempo(Tempo *tempo){
     tempo->valor = 0;
 }

@@ -9,7 +9,10 @@
 
 #define BUFFER 1 // Lendo um caractere por vez
 
-int main(void) {
+// Inclua o cabeçalho do Gerenciador de Processos
+#include "../headers/gerenciador_de_processos.h"
+
+int main() {
     int fd[2]; /* Descritores de arquivo para o Pipe */
     pid_t pid; /* Variável para armazenar o PID */
     int file_fd; /* Descritor de arquivo para o init.txt */
@@ -81,6 +84,10 @@ int main(void) {
         char str_recebida[BUFFER];
         ssize_t bytes_read;
 
+        /* Inicializar o Gerenciador de Processos */
+        GerenciadorProcessos gerenciador;
+        iniciarGerenciadorProcessos(&gerenciador);
+
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
 
@@ -91,16 +98,19 @@ int main(void) {
             str_recebida[bytes_read] = '\0'; // Garantir que a string seja terminada
             printf("Comando recebido: %c\n", str_recebida[0]);
 
-            // TODO adicionar lógica para processar cada comando
+            // Processar comandos com o Gerenciador de Processos
             switch (str_recebida[0]) {
                 case 'U':
                     printf("Comando 'U' recebido: Fim de uma unidade de tempo.\n");
+                    // Chamar função do Gerenciador de Processos para avançar no tempo
                     break;
                 case 'I':
                     printf("Comando 'I' recebido: Imprimindo estado atual do sistema.\n");
+                    // Chamar função do Gerenciador de Processos para imprimir o estado
                     break;
                 case 'M':
                     printf("Comando 'M' recebido: Imprimindo tempo médio de resposta e finalizando.\n");
+                    // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
                     break;
                 default:
                     printf("Comando desconhecido: %c\n", str_recebida[0]);
