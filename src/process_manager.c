@@ -8,41 +8,43 @@
 #define MAX_CMD_LEN 256
 
 void handle_command(char *cmd) {
-    int process_id, x, n;
+    int x, n;
     char file[256];
 
     switch (cmd[0]) {
         case 'N':
-            sscanf(cmd, "N %d %d", &process_id, &n);
-            handle_N(process_id, n);
+            sscanf(cmd, "N %d", &n);
+            handle_N(n);
             break;
         case 'D':
-            sscanf(cmd, "D %d %d", &process_id, &x);
-            handle_D(process_id, x);
+            sscanf(cmd, "D %d", &x);
+            handle_D(x);
             break;
         case 'V':
-            sscanf(cmd, "V %d %d %d", &process_id, &x, &n);
-            handle_V(process_id, x, n);
+            sscanf(cmd, "V %d %d", &x, &n);
+            handle_V(x, n);
             break;
         case 'A':
-            sscanf(cmd, "A %d %d %d", &process_id, &x, &n);
-            handle_A(process_id, x, n);
+            sscanf(cmd, "A %d %d", &x, &n);
+            handle_A(x, n);
             break;
         case 'S':
-            sscanf(cmd, "S %d %d %d", &process_id, &x, &n);
-            handle_S(process_id, x, n);
+            sscanf(cmd, "S %d %d", &x, &n);
+            handle_S(x, n);
+            break;
+        case 'B':
+            sscanf(cmd, "B %d", &n);
+            handle_B(n);
             break;
         case 'F':
-            sscanf(cmd, "F %d", &process_id);
-            handle_F(process_id);
+            handle_F();
             break;
         case 'R':
-            sscanf(cmd, "R %d %s", &process_id, file);
-            handle_R(process_id, file);
+            sscanf(cmd, "R %s", file);
+            handle_R(file);
             break;
         case 'T':
-            sscanf(cmd, "T %d", &process_id);
-            handle_T(process_id);
+            handle_T();
             break;
         default:
             fprintf(stderr, "Comando desconhecido: %s", cmd);

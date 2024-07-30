@@ -9,7 +9,6 @@
 #define MAX_VARS 10
 
 typedef struct {
-    int id;
     int num_vars;
     int vars[MAX_VARS];
     int pc;
@@ -18,67 +17,106 @@ typedef struct {
 
 Process process_table[MAX_PROCESSES];
 int process_count = 0;
+int current_process = -1;
 
-void handle_N(int process_id, int n) {
-    process_table[process_id].id = process_id;
-    process_table[process_id].num_vars = n;
-    memset(process_table[process_id].vars, 0, n * sizeof(int));
-    process_table[process_id].state = 0; // ready
-    printf("Processo %d: Número de variáveis definido para %d\n", process_id, n);
+void switch_to_process(int process_id) {
+    if (process_id < 0 || process_id >= process_count) {
+        fprintf(stderr, "Erro: ID do processo inválido\n");
+        return;
+    }
+    current_process = process_id;
 }
 
-void handle_D(int process_id, int x) {
-    if (x < 0 || x >= process_table[process_id].num_vars) {
+void handle_N(int n) {
+    if (process_count >= MAX_PROCESSES) {
+        fprintf(stderr, "Erro: número máximo de processos atingido\n");
+        return;
+    }
+    process_table[process_count].num_vars = n;
+    memset(process_table[process_count].vars, 0, n * sizeof(int));
+    process_table[process_count].state = 0; // ready
+    printf("Processo %d: Número de variáveis definido para %d\n", process_count, n);
+    switch_to_process(process_count);
+    process_count++;
+}
+
+void handle_D(int x) {
+    if (current_process == -1 || x < 0 || x >= process_table[current_process].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
-    process_table[process_id].vars[x] = 0;
-    printf("Processo %d: Variável %d redefinida para 0\n", process_id, x);
+    process_table[current_process].vars[x] = 0;
+    printf("Processo %d: Variável %d redefinida para 0\n", current_process, x);
 }
 
-void handle_V(int process_id, int x, int value) {
-    if (x < 0 || x >= process_table[process_id].num_vars) {
+void handle_V(int x, int value) {
+    if (current_process == -1 || x < 0 || x >= process_table[current_process].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
-    process_table[process_id].vars[x] = value;
-    printf("Processo %d: Variável %d definida para %d\n", process_id, x, value);
+    process_table[current_process].vars[x] = value;
+    printf("Processo %d: Variável %d definida para %d\n", current_process, x, value);
 }
 
-void handle_A(int process_id, int x, int value) {
-    if (x < 0 || x >= process_table[process_id].num_vars) {
+void handle_A(int x, int value) {
+    if (current_process == -1 || x < 0 || x >= process_table[current_process].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
-    process_table[process_id].vars[x] += value;
-    printf("Processo %d: Variável %d incrementada em %d\n", process_id, x, value);
+    process_table[current_process].vars[x] += value;
+    printf("Processo %d: Variável %d incrementada em %d\n", current_process, x, value);
 }
 
-void handle_S(int process_id, int x, int value) {
-    if (x < 0 || x >= process_table[process_id].num_vars) {
+void handle_S(int x, int value) {
+    if (current_process == -1 || x < 0 || x >= process_table[current_process].num_vars) {
         fprintf(stderr, "Erro: índice da variável fora dos limites\n");
         return;
     }
-    process_table[process_id].vars[x] -= value;
-    printf("Processo %d: Variável %d decrementada em %d\n", process_id, x, value);
+    process_table[current_process].vars[x] -= value;
+    printf("Processo %d: Variável %d decrementada em %d\n", current_process, x, value);
 }
 
-void handle_F(int process_id) {
-    process_table[process_id].state = 2; // Terminated
-    printf("Processo %d: Terminado\n", process_id);
+void handle_B(int n) {
+    if (current_process == -1) {
+        fprintf(stderr, "Erro: nenhum processo atual\n");
+        return;
+    }
+    process_table[current_process].state = 1; // blocked
+    printf("Processo %d: Bloqueado por %d unidades de tempo\n", current_process, n);
+    // Implementar lógica de bloqueio aqui
 }
 
-void handle_R(int process_id, char *file) {
-    printf("Processo %d: Lendo arquivo %s\n", process_id, file);
-    // Implementação da leitura do arquivo
+void handle_F() {
+    if (process_count >= MAX_PROCESSES) {
+        fprintf(stderr, "Erro: número máximo de processos atingido\n");
+        return;
+    }
+    process_table[process_count] = process_table[current_process];
+    process_table[current_process].state = 0; // ready
+    printf("Processo %d: Novo processo criado\n", process_count);
+    switch_to_process(process_count);
+    process_count++;
 }
 
-void handle_T(int process_id) {
-    printf("Processo %d: T\n", process_id);
-    // Implementação do comando T
+void handle_R(char *file) {
+    if (current_process == -1) {
+        fprintf(stderr, "Erro: nenhum processo atual\n");
+        return;
+    }
+    printf("Processo %d: Lendo arquivo %s\n", current_process, file);
+    // Implementar a leitura do arquivo aqui
 }
 
-int create_simulated_process(int process_id, const char *commands[]) {
+void handle_T() {
+    if (current_process == -1) {
+        fprintf(stderr, "Erro: nenhum processo atual\n");
+        return;
+    }
+    process_table[current_process].state = 2; // terminated
+    printf("Processo %d: Terminado\n", current_process);
+}
+
+int create_simulated_process(const char *commands[]) {
     pid_t pid = fork();
 
     if (pid < 0) {
@@ -87,8 +125,8 @@ int create_simulated_process(int process_id, const char *commands[]) {
     }
 
     if (pid == 0) {
-        printf("Processo simulado iniciado com PID: %d, ID: %d\n", getpid(), process_id);
-        
+        printf("Processo simulado iniciado com PID: %d\n", getpid());
+
         for (int i = 0; commands[i] != NULL; i++) {
             // TODO - Implementar a execução dos comandos
             printf("Executando comando: %s\n", commands[i]);
@@ -98,6 +136,7 @@ int create_simulated_process(int process_id, const char *commands[]) {
         printf("Processo simulado com PID %d terminado\n", getpid());
         exit(EXIT_SUCCESS);
     } else {
-        return pid; 
+        return pid;
     }
+    //
 }

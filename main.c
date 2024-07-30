@@ -5,16 +5,13 @@
 #include "./include/control_process.h"
 
 int main(int argc, char *argv[]) {
-    // Verifica se argumentos foram passados, se necessário
-    if (argc < 2) {
-        fprintf(stderr, "Uso: %s <arquivo_de_entrada>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
+    // Verifica se argumentos foram passados
+    const char *input_file = (argc >= 2) ? argv[1] : NULL;
 
-    printf("Iniciando o processo de controle com o arquivo: %s\n", argv[1]);
+    printf("Iniciando o processo de controle com o arquivo: %s\n", input_file ? input_file : "entrada padrão");
 
     // Cria o processo de controle
-    if (start_control_process() == -1) {
+    if (start_control_process(input_file) == -1) {
         fprintf(stderr, "Falha ao iniciar o processo de controle\n");
         return EXIT_FAILURE;
     }

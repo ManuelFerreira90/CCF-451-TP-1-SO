@@ -10,7 +10,7 @@
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 
-int start_control_process()
+int start_control_process(const char *input_file)
 {
     int fd[2];
     pid_t pid;
@@ -30,32 +30,51 @@ int start_control_process()
 
     if (pid == 0)
     {
-        close(fd[PIPE_WRITE]);
-        dup2(fd[PIPE_READ], STDIN_FILENO); 
+        // Processo filho: processo gerenciador de processos
+        close(fd[PIPE_WRITE]); // Fechar o lado de escrita no processo filho
+        dup2(fd[PIPE_READ], STDIN_FILENO); // Redirecionar stdin para ler do pipe
         close(fd[PIPE_READ]);
 
-        execl("./bin/process_manager", "process_manager", NULL); 
-        perror("execl"); 
+        execl("./bin/process_manager", "process_manager", NULL);
+        perror("execl");
         return -1;
     }
     else 
     {
-        close(fd[PIPE_READ]);
+        // Processo pai: processo de controle
+        close(fd[PIPE_READ]); // Fechar o lado de leitura no processo pai
 
-        FILE *input = fopen("./entry/input.txt", "r");
-        if (!input)
+        FILE *input = NULL;
+        if (input_file) 
         {
-            perror("fopen");
-            return -1;
+            input = fopen("./entry/input.txt", "r");
+            if (!input)
+            {
+                perror("fopen");
+                return -1;
+            }
+        }
+        else
+        {
+            input = stdin;
         }
 
         char line[MAX_CMD_LEN];
         while (fgets(line, sizeof(line), input))
         {
-            write(fd[PIPE_WRITE], line, strlen(line)); 
+            write(fd[PIPE_WRITE], line, strlen(line));
+            // Verificar se o comando é 'M' para finalizar
+            if (line[0] == 'M') 
+            {
+                break;
+            }
         }
 
-        fclose(input);
+        if (input != stdin) 
+        {
+            fclose(input);
+        }
+        
         close(fd[PIPE_WRITE]);
         wait(NULL);
     }
