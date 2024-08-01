@@ -2,12 +2,12 @@
 
 
 typedef struct tabelaProcessos{
-    Processo * lista_processos;
+    ProcessoSimulado * lista_processos;
     int primeiroProcessoIndex;
     int ultimoProcessoIndex;
     
 }tabelaProcessos;
 
 void inicializarTabelaProcessos(tabelaProcessos * tabela);
-void inserirTabelaProcessos(Processo processo, tabelaProcessos *tabela);
+void inserirTabelaProcessos(ProcessoSimulado processo, tabelaProcessos *tabela);
 

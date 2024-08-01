@@ -12,18 +12,13 @@ typedef struct CPU
     int quantidadeInteiros;
 } CPU;
 
-typedef struct ProcessoSimulado
-{
-    int *memoria;
-    int contadorPrograma;
-    int quantidadeInteiros;
-    // Outros campos conforme necessário
-} ProcessoSimulado;
+
 
 typedef struct GerenciadorProcessos
 {
     CPU cpu;
     Tempo tempoAtual;
+  
     tabelaProcessos TabelaProcessos;
     int *listaProntos;    // Lista de processos prontos
     int *listaBloqueados; // Lista de processos bloqueados

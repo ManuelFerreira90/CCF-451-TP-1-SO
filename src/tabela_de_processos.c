@@ -6,6 +6,7 @@ int isTabelaProcessosVazia(tabelaProcessos * tabela){
     }
     return 0;
 }
+
 int isTabelaProcessosCheia(tabelaProcessos * tabela){
     if(tabela->ultimoProcessoIndex >= MAX_PROCESSOS){
         return 1;
@@ -18,12 +19,12 @@ int getTamanhoTabelaProcessos(tabelaProcessos * tabela){
 }
 
 void inicializarTabelaProcessos(tabelaProcessos * tabela){
-    tabela->lista_processos = (Processo *) malloc(sizeof(Processo) * MAX_PROCESSOS);
+    tabela->lista_processos = (ProcessoSimulado *) malloc(sizeof(ProcessoSimulado) * MAX_PROCESSOS);
     tabela->primeiroProcessoIndex = 0;
     tabela->ultimoProcessoIndex = tabela->primeiroProcessoIndex;
 }
 
-void inserirTabelaProcessos(Processo processo, tabelaProcessos *tabela) { 
+void inserirTabelaProcessos(ProcessoSimulado processo, tabelaProcessos *tabela) { 
     if (tabela->ultimoProcessoIndex <= MAX_PROCESSOS) {
      
         tabela -> lista_processos[tabela -> ultimoProcessoIndex] = processo;
