@@ -9,5 +9,5 @@ typedef struct tabelaProcessos{
 }tabelaProcessos;
 
 void inicializarTabelaProcessos(tabelaProcessos * tabela);
-oid inserirTabelaProcessos(Processo processo, tabelaProcessos *tabela);
+void inserirTabelaProcessos(Processo processo, tabelaProcessos *tabela);
 

@@ -1,7 +1,7 @@
 #ifndef GERENCIADOR_PROCESSOS_H
 #define GERENCIADOR_PROCESSOS_H
 
-#include "./tempo.h"
+#include "./processo.h"
 
 typedef struct CPU
 {
