@@ -105,13 +105,140 @@ void iniciarCPU(GerenciadorProcessos *gerenciador)
     iniciarVetorMemoria(gerenciador);
 }
 
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador)
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char* arquivoEntrada)
 {
-    iniciarCPU((gerenciador));
-
+    // Inicializa a CPU e outras partes do gerenciador
+    iniciarCPU(gerenciador);
     inicializarTempo(&gerenciador->tempoAtual);
-
     gerenciador->cpu.quantidadeInteiros = 5;
+    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
+
+    // Abre o arquivo de entrada
+    FILE *file = fopen(arquivoEntrada, "r");
+    if (!file) {
+        fprintf(stderr, "Erro ao abrir o arquivo %s\n", arquivoEntrada);
+        exit(EXIT_FAILURE);
+    }
+
+    char linha[MAX_CMD_LEN];
+    ProcessoSimulado *processoAtual = NULL;
+    Instrucao *instrucoes = NULL;
+    int quantidadeInstrucoes = 0;
+
+    // Lê o arquivo linha por linha
+    while (fgets(linha, sizeof(linha), file)) {
+        char comando[MAX_CMD_LEN];
+        int valor1, valor2;
+
+        // Remove a quebra de linha no final
+        linha[strcspn(linha, "\n")] = '\0';
+
+        if (sscanf(linha, "N %d", &valor1) == 1) {
+            // Cria um novo processo com 'N'
+            if (processoAtual) {
+                processoAtual->instrucoes = malloc(quantidadeInstrucoes * sizeof(Instrucao));
+                for (int i = 0; i < quantidadeInstrucoes; i++) {
+                    processoAtual->instrucoes[i] = instrucoes[i];
+                }
+                free(instrucoes);
+                quantidadeInstrucoes = 0;
+            }
+            processoAtual = &gerenciador->TabelaProcessos.lista_processos[gerenciador->TabelaProcessos.ultimoProcessoIndex++];
+            processoAtual->ID_Processo = gerenciador->TabelaProcessos.ultimoProcessoIndex - 1;
+            processoAtual->ID_Processo_Pai = -1; // Processo inicial não tem pai
+            processoAtual->PC = 0;
+            processoAtual->EstadosProcesso = Pronto;
+            processoAtual->prioridade = 0;
+            processoAtual->quantidadeInteiros = valor1;
+            processoAtual->memoria = calloc(valor1, sizeof(int));
+            instrucoes = NULL; // Inicializa a lista de instruções
+        } else if (sscanf(linha, "D %d", &valor1) == 1) {
+            // Define a variável para 0 com 'D'
+            if (processoAtual) {
+                // Adiciona a instrução 'D'
+                quantidadeInstrucoes++;
+                instrucoes = realloc(instrucoes, quantidadeInstrucoes * sizeof(Instrucao));
+                instrucoes[quantidadeInstrucoes - 1].funcao = 'D';
+                instrucoes[quantidadeInstrucoes - 1].valor = valor1;
+            }
+        } else if (sscanf(linha, "V %d %d", &valor1, &valor2) == 2) {
+            // Define a variável com 'V'
+            if (processoAtual) {
+                // Adiciona a instrução 'V'
+                quantidadeInstrucoes++;
+                instrucoes = realloc(instrucoes, quantidadeInstrucoes * sizeof(Instrucao));
+                instrucoes[quantidadeInstrucoes - 1].funcao = 'V';
+                instrucoes[quantidadeInstrucoes - 1].valor = valor1;
+            }
+        } else if (sscanf(linha, "A %d %d", &valor1, &valor2) == 2) {
+            // Adiciona 'A' a variável
+            if (processoAtual) {
+                // Adiciona a instrução 'A'
+                quantidadeInstrucoes++;
+                instrucoes = realloc(instrucoes, quantidadeInstrucoes * sizeof(Instrucao));
+                instrucoes[quantidadeInstrucoes - 1].funcao = 'A';
+                instrucoes[quantidadeInstrucoes - 1].valor = valor1;
+            }
+        } else if (sscanf(linha, "S %d %d", &valor1, &valor2) == 2) {
+            // Subtrai 'S' da variável
+            if (processoAtual) {
+                // Adiciona a instrução 'S'
+                quantidadeInstrucoes++;
+                instrucoes = realloc(instrucoes, quantidadeInstrucoes * sizeof(Instrucao));
+                instrucoes[quantidadeInstrucoes - 1].funcao = 'S';
+                instrucoes[quantidadeInstrucoes - 1].valor = valor1;
+            }
+        } else if (sscanf(linha, "F %d", &valor1) == 1) {
+            // Cria um novo processo filho com 'F'
+            if (processoAtual) {
+                processoAtual->instrucoes = malloc(quantidadeInstrucoes * sizeof(Instrucao));
+                for (int i = 0; i < quantidadeInstrucoes; i++) {
+                    processoAtual->instrucoes[i] = instrucoes[i];
+                }
+                free(instrucoes);
+                quantidadeInstrucoes = 0;
+            }
+            ProcessoSimulado *processoFilho = &gerenciador->TabelaProcessos.lista_processos[gerenciador->TabelaProcessos.ultimoProcessoIndex++];
+            processoFilho->ID_Processo = gerenciador->TabelaProcessos.ultimoProcessoIndex - 1;
+            processoFilho->ID_Processo_Pai = processoAtual->ID_Processo;
+            processoFilho->PC = processoAtual->PC + 1;
+            processoFilho->EstadosProcesso = Pronto;
+            processoFilho->quantidadeInteiros = processoAtual->quantidadeInteiros;
+            processoFilho->memoria = malloc(processoFilho->quantidadeInteiros * sizeof(int));
+            memcpy(processoFilho->memoria, processoAtual->memoria, processoFilho->quantidadeInteiros * sizeof(int));
+            processoFilho->instrucoes = NULL; // Inicializa a lista de instruções
+            processoAtual = processoFilho;
+        } else if (sscanf(linha, "R %s", comando) == 1) {
+            // Lê um novo arquivo de instruções com 'R'
+            // (Para simplificação, a implementação do tratamento de arquivos externos é omitida)
+        } else if (strcmp(linha, "T") == 0) {
+            // Finaliza o processo de leitura e inicialização
+            if (processoAtual) {
+                processoAtual->instrucoes = malloc(quantidadeInstrucoes * sizeof(Instrucao));
+                for (int i = 0; i < quantidadeInstrucoes; i++) {
+                    processoAtual->instrucoes[i] = instrucoes[i];
+                }
+                free(instrucoes);
+                quantidadeInstrucoes = 0;
+            }
+            break; // Encerra a leitura do arquivo
+        } else {
+            fprintf(stderr, "Comando desconhecido: %s\n", linha);
+        }
+    }
+
+    imprimirInstrucoes(processoAtual);
+
+    // Fecha o arquivo
+    fclose(file);
+}
+
+
+void imprimirInstrucoes(ProcessoSimulado *processo) {
+    printf("Instruções do Processo %d:\n", processo->ID_Processo);
+    for (int i = 0; i < processo->quantidadeInteiros; i++) {
+        printf("%c %d\n", processo->instrucoes[i].funcao, processo->instrucoes[i].valor);
+    }
 }
 
 void imprimeCPU(CPU cpu)

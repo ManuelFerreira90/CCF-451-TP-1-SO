@@ -11,6 +11,8 @@
 #include <sys/wait.h> // Para wait()
 #include <errno.h>
 
+#define MAX_CMD_LEN 100
+
 typedef struct Tempo{
     int valor;
 }Tempo;

@@ -79,7 +79,7 @@ int main() {
 
         /* Inicializar o Gerenciador de Processos */
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador);
+        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt");
 
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho

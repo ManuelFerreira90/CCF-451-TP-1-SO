@@ -27,7 +27,7 @@ typedef struct GerenciadorProcessos
 } GerenciadorProcessos;
 
 // Declarações de funções e estruturas
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador);
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char* arquivoEntrada);
 void  iniciarCPU(GerenciadorProcessos *gerenciador);
 
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo);
@@ -39,4 +39,5 @@ void terminarProcessoSimulado(GerenciadorProcessos *gerenciador);
 void executarProcessoAtual(GerenciadorProcessos *gerenciador);
 void processarComando(GerenciadorProcessos *gerenciador, char comando, int argumento);
 void iniciarVetorMemoria(GerenciadorProcessos *gerenciador);
+void imprimirInstrucoes(ProcessoSimulado *processo);
 #endif // GERENCIADOR_PROCESSOS_H
