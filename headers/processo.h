@@ -1,17 +1,12 @@
 #include "./tempo.h"
+#include "./CPU.h"
+
 typedef enum
 {
     Bloqueado = 0,
     Pronto = 1,
-    Execucao = 2
+    Execucao = 2,
 } Estados;
-
-typedef struct Instrucao
-{
-    char funcao;
-    int valor;
-    int valor2;
-} Instrucao;
 
 typedef struct
 {
@@ -22,8 +17,8 @@ typedef struct
     int prioridade;
     int *memoria;
     int quantidadeInteiros;
-    Instrucao *instrucoes;
     int quantidadeInstrucoesExecutadas;
+    char *conjuntoInstrucoes;
 } ProcessoSimulado;
 
-void inicializaProcesso(ProcessoSimulado *processo);
+ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes);

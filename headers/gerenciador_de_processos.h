@@ -3,17 +3,6 @@
 
 #include "./tabela_de_processos.h"
 
-typedef struct CPU
-{
-    int contadorPrograma; // Valor atual do contadorPrograma
-    int *memoriaVect;     // Vetor de Memória
-    Tempo fatiaTempo;
-    Tempo tempoUsado;
-    int quantidadeInteiros;
-} CPU;
-
-
-
 typedef struct GerenciadorProcessos
 {
     CPU cpu;
@@ -40,4 +29,5 @@ void executarProcessoAtual(GerenciadorProcessos *gerenciador);
 void processarComando(GerenciadorProcessos *gerenciador, char comando, int argumento);
 void iniciarVetorMemoria(GerenciadorProcessos *gerenciador);
 void imprimirInstrucoes(ProcessoSimulado *processo);
+
 #endif // GERENCIADOR_PROCESSOS_H

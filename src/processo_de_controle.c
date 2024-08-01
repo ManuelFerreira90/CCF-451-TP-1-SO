@@ -1,8 +1,5 @@
-
-
 #define BUFFER 1 // Lendo um caractere por vez
 
-// Inclua o cabeçalho do Gerenciador de Processos
 #include "../headers/gerenciador_de_processos.h"
 
 int main() {

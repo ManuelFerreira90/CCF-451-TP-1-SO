@@ -2,6 +2,8 @@
 #define TEMPO_H
 
 #define MAX_PROCESSOS 5000
+#define TAMANHO_MEMORIA 100
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +12,7 @@
 #include <fcntl.h>  // Para open()
 #include <sys/wait.h> // Para wait()
 #include <errno.h>
+
 
 #define MAX_CMD_LEN 100
 
