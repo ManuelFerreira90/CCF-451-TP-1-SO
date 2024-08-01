@@ -6,6 +6,7 @@ void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado
     // Implementar lógica para adicionar à lista de processos prontos
 }
 
+
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n) {
     // Cria e inicializa um novo processo simulado
     ProcessoSimulado *novoProcesso = (ProcessoSimulado *)malloc(sizeof(ProcessoSimulado));

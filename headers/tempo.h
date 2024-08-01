@@ -1,6 +1,8 @@
 #ifndef TEMPO_H
 #define TEMPO_H
 
+#define MAX_PROCESSOS 1000
+#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 
