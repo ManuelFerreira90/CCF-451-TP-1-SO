@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>  // Para open()
-#include <sys/wait.h> // Para wait()
-#include <errno.h>
+
 
 #define BUFFER 1 // Lendo um caractere por vez
 

@@ -1,7 +1,7 @@
 #ifndef GERENCIADOR_PROCESSOS_H
 #define GERENCIADOR_PROCESSOS_H
 
-#include "./processo.h"
+#include "./tabela_de_processos.h"
 
 typedef struct CPU
 {
@@ -24,8 +24,10 @@ typedef struct GerenciadorProcessos
 {
     CPU cpu;
     Tempo tempoAtual;
-    ProcessoSimulado *filaProntos;    // Lista de processos prontos
-    ProcessoSimulado *filaBloqueados; // Lista de processos bloqueados
+    tabelaProcessos TabelaProcessos;
+    int *listaProntos;    // Lista de processos prontos
+    int *listaBloqueados; // Lista de processos bloqueados
+    int *listaExecucao; // Lista de processos em execução
     ProcessoSimulado *processoAtual;
 } GerenciadorProcessos;
 

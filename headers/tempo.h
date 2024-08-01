@@ -1,10 +1,15 @@
 #ifndef TEMPO_H
 #define TEMPO_H
 
-#define MAX_PROCESSOS 1000
+#define MAX_PROCESSOS 5000
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>  // Para open()
+#include <sys/wait.h> // Para wait()
+#include <errno.h>
 
 typedef struct Tempo{
     int valor;
