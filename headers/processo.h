@@ -16,7 +16,6 @@ typedef struct
     int prioridade;
     int *memoria;
     int quantidadeInteiros;
-    int quantidadeInstrucoesExecutadas;
     char *conjuntoInstrucoes;
 } ProcessoSimulado;
 

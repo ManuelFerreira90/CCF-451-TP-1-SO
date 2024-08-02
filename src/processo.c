@@ -26,8 +26,6 @@ ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes){
     processo->EstadosProcesso = Pronto;
     processo->prioridade = 0;
     processo->memoria = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
-    processo->quantidadeInteiros = 0;
-    processo->quantidadeInstrucoesExecutadas = 0;
     processo->conjuntoInstrucoes = conjuntoInstrucoes;
 
     return processo;
