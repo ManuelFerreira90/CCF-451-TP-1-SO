@@ -2,7 +2,6 @@
 #define CPU_H
 
 #include "./processo.h"
-#include "./tempo.h"
 
 typedef struct CPU
 {

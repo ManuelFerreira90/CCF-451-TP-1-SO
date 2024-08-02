@@ -1,7 +1,7 @@
 #ifndef TABELA_DE_PROCESSOS_H
 #define TABELA_DE_PROCESSOS_H
 
-#include "./processo.h"
+#include "./CPU.h"
 
 typedef struct tabelaProcessos
 {

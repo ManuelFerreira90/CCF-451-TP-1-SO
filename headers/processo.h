@@ -1,5 +1,4 @@
 #include "./tempo.h"
-#include "./CPU.h"
 
 typedef enum
 {
