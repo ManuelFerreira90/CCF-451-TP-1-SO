@@ -96,11 +96,9 @@ void processarComando(GerenciadorProcessos *gerenciador, char comando, int argum
 void iniciarVetorMemoria(GerenciadorProcessos *gerenciador)
 {
     gerenciador->cpu.memoriaVect = (int *)malloc(gerenciador->cpu.quantidadeInteiros * sizeof(int));
-    for (int i = 0; i < gerenciador->cpu.quantidadeInteiros; i++)
-    {
-        gerenciador->cpu.memoriaVect[i] = 0;
-    }
+
 }
+
 void iniciarCPU(GerenciadorProcessos *gerenciador)
 {
     inicializarTempo(&(gerenciador->cpu.fatiaTempo));
@@ -184,7 +182,7 @@ void processarLinhaEspecifica(int *valor, int *index, const char *caminhoArquivo
                 {
                     *valor = v1;
                     printf("Comando: %c, Valor: %d\n", comando, *valor);
-
+                        
                 }
                 break;
             case 'A':
