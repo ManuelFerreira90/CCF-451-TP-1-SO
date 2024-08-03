@@ -1,5 +1,3 @@
-all:	
-	gcc main.c ./src/utils.c ./src/control_process.c -o exec
-	gcc ./src/process_manager.c ./src/simulated_process.c -o ./bin/process_manager
-	./exec input.txt
-	
+all:
+	gcc -o exe ./src/tempo.c ./src/processo.c ./src/tabela_de_processos.c ./src/processo_de_controle.c ./src/gerenciador_de_processos.c
+	./exe
