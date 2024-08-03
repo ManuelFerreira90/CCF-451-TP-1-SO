@@ -27,7 +27,6 @@ int main() {
     if (pid > 0) {
         /* No pai, ler comandos e escrever no Pipe */
         close(fd[0]); // Fechar a leitura do Pipe no lado do pai
-
         printf("Escolha a entrada (a: entrada padrão, f: arquivo): ");
         escolha = getchar();
         getchar(); // Consome o newline após a escolha

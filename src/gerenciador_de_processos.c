@@ -178,11 +178,13 @@ void processarLinhaEspecifica(int *valor, int *index, const char *caminhoArquivo
             switch (comando)
             {
             case 'N':
+                
             case 'D':
                 if (sscanf(linha + 2, "%d", &v1) == 1)
                 {
                     *valor = v1;
                     printf("Comando: %c, Valor: %d\n", comando, *valor);
+
                 }
                 break;
             case 'A':
@@ -195,6 +197,15 @@ void processarLinhaEspecifica(int *valor, int *index, const char *caminhoArquivo
                     printf("Comando: %c, Index: %d, Valor: %d\n", comando, *index, *valor);
                 }
                 break;
+
+            case 'R':
+            char *caminhoArquivoNovo  = (char*) malloc(sizeof(char) * MAX_CMD_LEN);
+            if (sscanf(linha + 1, "%s", caminhoArquivoNovo) == 1)
+                {
+                processarLinhaEspecifica(valor, index, caminhoArquivoNovo, 0, NULL);
+                }
+                break;
+            
             default:
                 // Ignora outras linhas ou comandos não reconhecidos
                 break;
