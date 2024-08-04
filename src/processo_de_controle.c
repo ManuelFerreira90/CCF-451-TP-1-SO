@@ -91,7 +91,7 @@ int main() {
             // Processar comandos com o Gerenciador de Processos
             switch (str_recebida[0]) {
                 case 'U':
-                    printf("Comando 'U' recebido: Fim de uma unidade de tempo.\n");
+                    printf("Fim de uma unidade de tempo.\n");
                     // Chamar função do Gerenciador de Processos para avançar no tempo
                     if (comecou == 0) {
                         comecaExecucao(&gerenciador);
@@ -103,12 +103,12 @@ int main() {
                     }    
                     break;
                 case 'I':
-                    printf("Comando 'I' recebido: Imprimindo estado atual do sistema.\n");
+                    printf("Imprimindo estado atual do sistema.\n");
                     // Chamar função do Gerenciador de Processos para imprimir o estado
                     imprimeCPU(gerenciador.cpu);
                     break;
                 case 'M':
-                    printf("Comando 'M' recebido: Imprimindo tempo médio de resposta e finalizando.\n");
+                    printf("Imprimindo tempo médio de resposta e finalizando.\n");
                     // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
                     break;
                 default:

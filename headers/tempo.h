@@ -3,6 +3,7 @@
 
 #define MAX_PROCESSOS 5000
 #define TAMANHO_MEMORIA 100
+#define TABLE_WIDTH 40
 
 #include <sys/types.h>
 #include <stdio.h>

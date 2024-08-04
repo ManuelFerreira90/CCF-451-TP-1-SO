@@ -20,14 +20,19 @@ void iniciarCPU(GerenciadorProcessos *gerenciador);
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo);
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
 void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo, int tempo);
-void processarLinhaEspecifica(int *valor, int *index, char *comando, const char *caminhoArquivo, int numeroLinha);
+Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha);
 void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo);
 void terminarProcessoSimulado(GerenciadorProcessos *gerenciador);
 void executarProcessoAtual(GerenciadorProcessos *gerenciador);
-void processarComando(GerenciadorProcessos *gerenciador, char comando, int valor, int index);
+void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao);
 void iniciarVetorMemoria(GerenciadorProcessos *gerenciador);
 void imprimirInstrucoes(ProcessoSimulado *processo);
 void comecaExecucao(GerenciadorProcessos *gerenciador);
 void imprimeCPU(CPU cpu);
+void comandoD(CPU *cpu, int index);
+void comandoN(CPU *cpu, int valor);
+void comandoV(CPU *cpu, int index, int valor);
+void comandoA(CPU *cpu, int index, int valor);
+void comandoS(CPU *cpu, int index, int valor);
 
 #endif // GERENCIADOR_PROCESSOS_H

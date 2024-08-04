@@ -45,38 +45,57 @@ void terminarProcessoSimulado(GerenciadorProcessos *gerenciador)
 void comandoD(CPU *cpu, int index)
 {
     cpu->memoriaVect[index] = 0;
+    cpu->contadorPrograma++;
 }
 
-void processarComando(GerenciadorProcessos *gerenciador, char comando, int valor, int index)
+void comandoN(CPU *cpu, int valor)
 {
-    switch (comando)
+    cpu->memoriaVect = (int *)malloc(valor * sizeof(int));
+    cpu->quantidadeInteiros = valor;
+    cpu->contadorPrograma++;
+}
+
+void comandoV(CPU *cpu, int index, int valor)
+{
+    cpu->memoriaVect[index] = valor;
+    cpu->contadorPrograma++;
+}
+
+void comandoA(CPU *cpu, int index, int valor)
+{
+    cpu->memoriaVect[index] += valor;
+    cpu->contadorPrograma++;
+}
+
+void comandoS(CPU *cpu, int index, int valor)
+{
+    cpu->memoriaVect[index] -= valor;
+    cpu->contadorPrograma++;
+}
+
+void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao)
+{
+    switch (instrucao.comando)
     {
     case 'N':
         // criar vetor de memória
-        gerenciador->cpu.memoriaVect = (int *)malloc(valor * sizeof(int));
-        gerenciador->cpu.quantidadeInteiros = valor;
-        gerenciador->cpu.contadorPrograma++;
+        comandoN(&(gerenciador->cpu), instrucao.valor);
         break;
     case 'D':
         // Declara uma nova variável no processo atual
-        // Implementar lógica para declarar uma variável
-        comandoD(&(gerenciador->cpu), valor);
-        gerenciador->cpu.contadorPrograma++;
+        comandoD(&(gerenciador->cpu), instrucao.valor); 
         break;
     case 'V':
         // Define o valor de uma variável
-        // Implementar lógica para definir o valor
-        printf("Definindo valor %d para variável %d\n", valor, index);
+        comandoV(&(gerenciador->cpu), instrucao.index, instrucao.valor);
         break;
     case 'A':
         // Adiciona valor a uma variável
-        // Implementar lógica para adicionar valor
-        printf("Adicionando valor %d à variável %d\n", valor, index);
+        comandoA(&(gerenciador->cpu), instrucao.index, instrucao.valor);
         break;
     case 'S':
         // Subtrai valor de uma variável
-        // Implementar lógica para subtrair valor
-        printf("Subtraindo valor %d da variável %d\n", valor, index);
+        comandoS(&(gerenciador->cpu), instrucao.index, instrucao.valor);
         break;
     case 'B':
         // Bloqueia o processo
@@ -89,10 +108,9 @@ void processarComando(GerenciadorProcessos *gerenciador, char comando, int valor
         break;
     case 'R':
         // Substitui o programa do processo simulado
-        // Implementar lógica para substituir o programa
         break;
     default:
-        printf("Comando desconhecido: %c\n", comando);
+        printf("Comando desconhecido: %c\n", instrucao.comando);
         break;
     }
 }
@@ -124,29 +142,43 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     gerenciador->Execucao = -1; // nenhum processo em execução
 }
 
-void imprimeCPU(CPU cpu)
-{
-    printf("CPU:");
-    printf("\nContador de programa: %d\n", cpu.contadorPrograma);
-    printf("\nFatia de tempo: %d\n", cpu.fatiaTempo.valor);
-    printf("\nMemoria atual na CPU: ");
+void printTableBorder() {
+    for (int i = 0; i < TABLE_WIDTH; i++) {
+        printf("-");
+    }
+    printf("\n");
+}
 
-    if (cpu.memoriaVect != NULL)
-    {
-        printf("\n");
-        for (int i = 0; i < cpu.quantidadeInteiros; i++)
-        {
-            printf("index: %d | valor: %d\n", i, cpu.memoriaVect[i]);
+void imprimeCPU(CPU cpu) {
+    printf("\n");
+    printTableBorder();
+    printf("| %-36s |\n", "CPU Status");
+    printTableBorder();
+    printf("| %-25s | %8d |\n", "Contador de programa", cpu.contadorPrograma);
+    printTableBorder();
+    printf("| %-25s | %8d |\n", "Fatia de tempo", cpu.fatiaTempo.valor);
+    printTableBorder();
+    printf("| %-36s |\n", "Memoria atual na CPU");
+    printTableBorder();
+
+    if (cpu.memoriaVect != NULL) {
+        printf("| %-15s | %-18s |\n", "Index", "Valor");
+        printTableBorder();
+        for (int i = 0; i < cpu.quantidadeInteiros; i++) {
+            printf("|  %14d | %18d |\n", i, cpu.memoriaVect[i]);
         }
+        printTableBorder();
+    } else {
+        printf("| %-36s |\n", "NULL");
+        printTableBorder();
     }
-    else
-    {
-        printf("NULL\n");
-    }
+    printf("\n");
 }
 
 // ler comandos de um arquivo
-void processarLinhaEspecifica(int *valor, int *index, char *comando, const char *caminhoArquivo, int numeroLinha) {
+Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha) {
+    Instrucao instrucao;
+    
     FILE *file = fopen(caminhoArquivo, "r");
     if (!file) {
         fprintf(stderr, "Erro ao abrir o arquivo %s\n", caminhoArquivo);
@@ -167,24 +199,25 @@ void processarLinhaEspecifica(int *valor, int *index, char *comando, const char 
                 break; // Linha vazia ou inválida
             }
 
-            *comando = cmd;
+            instrucao.comando = cmd;
 
             switch (cmd) {
                 case 'N':
                 case 'D':
                 case 'F':
                     if (sscanf(linha + 2, "%d", &v1) == 1) {
-                        *valor = v1;
-                        printf("Comando: %c, Valor: %d\n", cmd, *valor);
+                        // *valor = v1;
+                        instrucao.valor = v1;
+                        // printf("Comando: %c, Valor: %d\n", cmd, *valor);
                     }
                     break;
                 case 'A':
                 case 'S':
                 case 'V':
                     if (sscanf(linha + 2, "%d %d", &v1, &v2) == 2) {
-                        *index = v1;
-                        *valor = v2;
-                        printf("Comando: %c, Index: %d, Valor: %d\n", cmd, *index, *valor);
+                        instrucao.index = v1;
+                        instrucao.valor = v2;
+                        // printf("Comando: %c, Index: %d, Valor: %d\n", cmd, *index, *valor);
                     }
                     break;
                 case 'R': {
@@ -208,6 +241,8 @@ void processarLinhaEspecifica(int *valor, int *index, char *comando, const char 
     }
 
     fclose(file);
+
+    return instrucao;
 }
 
 
@@ -231,22 +266,17 @@ void comecaExecucao(GerenciadorProcessos *gerenciador) {
     if(gerenciador->cpu.processoEmExecucao->memoria != NULL){
         gerenciador->cpu.memoriaVect = gerenciador->cpu.processoEmExecucao->memoria;
     } else {
-        char comando;
-        int valor;
-        int index;
-        processarLinhaEspecifica(&valor, &index, &comando, gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
-        printf("Comando: %c, Valor: %d\n", comando, valor);
-        processarComando(gerenciador, comando, valor, index);
+        Instrucao instrucao;
+        instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
+        processarComando(gerenciador, instrucao);
     }/* code */
 }
 
 void executarProcessoAtual(GerenciadorProcessos *gerenciador)
 {
     // Executa o processo atual
-    char comando;
-    int valor;
-    int index;
-    processarLinhaEspecifica(&valor, &index, &comando, gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
+    Instrucao instrucao;
+    instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
     
-    processarComando(gerenciador, comando, valor, index);
+    processarComando(gerenciador, instrucao);
 }

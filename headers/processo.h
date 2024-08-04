@@ -1,4 +1,8 @@
+#ifndef PROCESSO_H
+#define PROCESSO_H
+
 #include "./tempo.h"
+#include "./instrucao.h"
 
 typedef enum
 {
@@ -20,3 +24,5 @@ typedef struct
 } ProcessoSimulado;
 
 ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes);
+
+#endif // PROCESSO_H
