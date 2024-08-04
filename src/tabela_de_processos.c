@@ -50,3 +50,41 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
     *tamanhoLista = indice_lista;
     return lista_indices;
 }
+
+// Função auxiliar para converter o estado do processo em uma string
+const char* estadoToString(Estados estado) {
+    switch (estado) {
+        case Bloqueado: return "Bloqueado";
+        case Pronto: return "Pronto";
+        case Execucao: return "Execução";
+        default: return "Desconhecido";
+    }
+}
+
+// Função para imprimir um único processo
+void imprimeProcesso(ProcessoSimulado *processo) {
+    if (processo != NULL) {
+        printf("| %-11d | %-14d | %-10d | %-11s | %-10d |\n",
+               processo->ID_Processo,
+               processo->ID_Processo_Pai,
+               processo->PC,
+               estadoToString(processo->EstadosProcesso),
+               processo->prioridade);
+    }
+}
+
+// Função para imprimir a tabela de processos
+void imprimeTabelaProcessos(tabelaProcessos *tabela) {
+    printf("+-------------+----------------+------------+-------------+------------+\n");
+    printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
+    printf("+-------------+----------------+------------+-------------+------------+\n");
+
+    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++) {
+        if (tabela->listaProcessos[i] != NULL) {
+            imprimeProcesso(tabela->listaProcessos[i]);
+        }
+    }
+
+    printf("+-------------+----------------+------------+-------------+------------+\n");
+}
+

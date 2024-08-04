@@ -74,9 +74,10 @@ int main() {
         ssize_t bytes_read;
 
         /* Inicializar o Gerenciador de Processos */
+        int comecou = 0;
         GerenciadorProcessos gerenciador;
         iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt");
-        
+        iniciarCPU(&gerenciador);
 
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
@@ -86,20 +87,29 @@ int main() {
 
         while ((bytes_read = read(fd[0], str_recebida, BUFFER)) > 0) {
             str_recebida[bytes_read] = '\0'; // Garantir que a string seja terminada
-            printf("Comando recebido: %c\n", str_recebida[0]);
 
             // Processar comandos com o Gerenciador de Processos
             switch (str_recebida[0]) {
                 case 'U':
-                    printf("Comando 'U' recebido: Fim de uma unidade de tempo.\n");
+                    printf("Fim de uma unidade de tempo.\n");
                     // Chamar função do Gerenciador de Processos para avançar no tempo
+                    if (comecou == 0) {
+                        comecaExecucao(&gerenciador);
+                        incrementarTempo(&gerenciador.cpu.tempoUsado);
+                        comecou = 1;
+                    } else {
+                        executarProcessoAtual(&gerenciador);
+                        incrementarTempo(&gerenciador.cpu.tempoUsado);
+                    }    
+                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
                     break;
                 case 'I':
-                    printf("Comando 'I' recebido: Imprimindo estado atual do sistema.\n");
+                    printf("Imprimindo estado atual do sistema.\n");
                     // Chamar função do Gerenciador de Processos para imprimir o estado
+                    imprimeCPU(gerenciador.cpu);
                     break;
                 case 'M':
-                    printf("Comando 'M' recebido: Imprimindo tempo médio de resposta e finalizando.\n");
+                    printf("Imprimindo tempo médio de resposta e finalizando.\n");
                     // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
                     break;
                 default:
@@ -116,6 +126,7 @@ int main() {
             perror("read");
         }
 
+        
         close(fd[0]); // Fechar o lado de leitura do Pipe
         exit(0);
     }

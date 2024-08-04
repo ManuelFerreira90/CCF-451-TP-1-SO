@@ -11,8 +11,7 @@ typedef struct GerenciadorProcessos
     tabelaProcessos TabelaProcessos;
     int *listaProntos;    // Lista de processos prontos
     int *listaBloqueados; // Lista de processos bloqueados
-    int *listaExecucao;   // Lista de processos em execução
-    ProcessoSimulado *processoAtual;
+    int Execucao;   // Lista de processos em execução
 } GerenciadorProcessos;
 
 // Declarações de funções e estruturas
@@ -21,12 +20,20 @@ void iniciarCPU(GerenciadorProcessos *gerenciador);
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo);
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
 void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo, int tempo);
-void processarLinhaEspecifica(int *valor, int *index, const char *caminhoArquivo, int numeroLinha, char *comando);
+Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha);
 void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo);
 void terminarProcessoSimulado(GerenciadorProcessos *gerenciador);
 void executarProcessoAtual(GerenciadorProcessos *gerenciador);
-void processarComando(GerenciadorProcessos *gerenciador, char comando, int argumento);
+void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao);
 void iniciarVetorMemoria(GerenciadorProcessos *gerenciador);
 void imprimirInstrucoes(ProcessoSimulado *processo);
+void comecaExecucao(GerenciadorProcessos *gerenciador);
+void imprimeCPU(CPU cpu);
+void comandoD(CPU *cpu, int index);
+void comandoN(CPU *cpu, int valor);
+void comandoV(CPU *cpu, int index, int valor);
+void comandoA(CPU *cpu, int index, int valor);
+void comandoS(CPU *cpu, int index, int valor);
+void printTableBorder();
 
 #endif // GERENCIADOR_PROCESSOS_H
