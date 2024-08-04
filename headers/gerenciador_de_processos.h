@@ -34,5 +34,6 @@ void comandoN(CPU *cpu, int valor);
 void comandoV(CPU *cpu, int index, int valor);
 void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
+void printTableBorder();
 
 #endif // GERENCIADOR_PROCESSOS_H

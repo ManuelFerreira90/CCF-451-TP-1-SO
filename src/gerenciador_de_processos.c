@@ -136,7 +136,10 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     gerenciador->listaProntos = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
     gerenciador->listaBloqueados = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
-    gerenciador->TabelaProcessos.listaProcessos[0] = inicializaProcesso(arquivoEntrada);
+    //gerenciador->TabelaProcessos.listaProcessos[0] = inicializaProcesso(arquivoEntrada);
+    
+    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
+    inserirTabelaProcessos(inicializaProcesso(arquivoEntrada), &(gerenciador->TabelaProcessos));
 
     gerenciador->listaProntos[0] = 0; // index do primeiro processo criado
     gerenciador->Execucao = -1; // nenhum processo em execução
