@@ -76,7 +76,7 @@ int main() {
         /* Inicializar o Gerenciador de Processos */
         int comecou = 0;
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt");
+        iniciarGerenciadorProcessos(&gerenciador,"./entry/inputteste.txt", getpid());
         iniciarCPU(&gerenciador);
 
         /* No filho, ler do Pipe e processar comandos */
@@ -100,8 +100,10 @@ int main() {
                     } else {
                         executarProcessoAtual(&gerenciador);
                         incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    }    
-                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+                    }  
+                    atualizaTempoBloqueio(&(gerenciador));  
+                    imprimeTabelaProcessos(&(gerenciador.TabelaProcessos));
+                    gerenciador.intrucaoAtual++;
                     break;
                 case 'I':
                     printf("Imprimindo estado atual do sistema.\n");
@@ -111,6 +113,10 @@ int main() {
                 case 'M':
                     printf("Imprimindo tempo médio de resposta e finalizando.\n");
                     // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
+                    free(gerenciador.listaProntos);
+                    free(gerenciador.listaBloqueados);
+                    free(gerenciador.conjuntoInstrucoes);
+                    free(&gerenciador.TabelaProcessos);
                     break;
                 default:
                     printf("Comando desconhecido: %c\n", str_recebida[0]);

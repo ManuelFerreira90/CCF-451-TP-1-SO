@@ -21,15 +21,15 @@ void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, ProcessoSimul
     // Implementar lógica para adicionar à lista de processos bloqueados
 }
 
-void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo)
-{
-    // Move o processo atual para a fila de bloqueados
-    // if (gerenciador->processoAtual)
-    // {
-    //     adicionarProcessoBloqueado(gerenciador, gerenciador->processoAtual, tempo);
-    //     gerenciador->processoAtual = NULL;
-    // }
-}
+// void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo)
+// {
+//     // Move o processo atual para a fila de bloqueados
+//     // if (gerenciador->processoAtual)
+//     // {
+//     //     adicionarProcessoBloqueado(gerenciador, gerenciador->processoAtual, tempo);
+//     //     gerenciador->processoAtual = NULL;
+//     // }
+// }
 
 void terminarProcessoSimulado(GerenciadorProcessos *gerenciador)
 {
@@ -73,38 +73,165 @@ void comandoS(CPU *cpu, int index, int valor)
     cpu->contadorPrograma++;
 }
 
+void reiniciarCPU(CPU *cpu)
+{
+    cpu->contadorPrograma = 0;
+    cpu->quantidadeInteiros = 0;
+    cpu->fatiaTempo.valor = 0;
+    cpu->tempoUsado.valor = 0;
+    cpu->processoEmExecucao = NULL;
+    free(cpu->memoriaVect);
+    cpu->memoriaVect = NULL;
+}
+
+void trocaProcessoParaBloqueado(GerenciadorProcessos *gerenciador, int n) {
+    if (gerenciador->Execucao == -1) {
+        printf("Não há processo em execução.\n");
+        return;
+    }
+
+    int processoID = gerenciador->Execucao;
+
+    // Encontrar o processo em execução na tabela de processos
+    ProcessoSimulado *processo = NULL;
+    for (int i = gerenciador->TabelaProcessos.primeiroProcessoIndex; i <= gerenciador->TabelaProcessos.ultimoProcessoIndex; i++) {
+        if (gerenciador->TabelaProcessos.listaProcessos[i] != NULL && 
+            gerenciador->TabelaProcessos.listaProcessos[i]->ID_Processo == processoID) {
+            processo = gerenciador->TabelaProcessos.listaProcessos[i];
+            break;
+        }
+    }
+
+    if (processo == NULL) {
+        printf("Processo em execução não encontrado na tabela de processos.\n");
+        return;
+    }
+
+    // Atualizar o estado do processo para Bloqueado e definir o tempo de bloqueio
+    processo->EstadosProcesso = Bloqueado;
+    processo->tempoBloqueio = n;
+
+    // Adicionar o processo à lista de bloqueados
+    gerenciador->listaBloqueados[gerenciador->tamListaBloqueados++] = processoID;
+
+    // Remover o processo da execução
+    gerenciador->Execucao = -1;
+
+    printf("Processo %d foi movido para a lista de bloqueados por %d unidades de tempo.\n", processoID, n);
+
+    reiniciarCPU(&(gerenciador->cpu));
+}
+
+void atualizaTempoBloqueio(GerenciadorProcessos *gerenciador) {
+    for (int i = 0; i < gerenciador->tamListaBloqueados; i++) {
+        int processoID = gerenciador->listaBloqueados[i];
+        
+        // Encontrar o processo na tabela de processos
+        ProcessoSimulado *processo = NULL;
+        for (int j = gerenciador->TabelaProcessos.primeiroProcessoIndex; j <= gerenciador->TabelaProcessos.ultimoProcessoIndex; j++) {
+            if (gerenciador->TabelaProcessos.listaProcessos[j] != NULL && 
+                gerenciador->TabelaProcessos.listaProcessos[j]->ID_Processo == processoID) {
+                processo = gerenciador->TabelaProcessos.listaProcessos[j];
+                break;
+            }
+        }
+
+        if (processo == NULL) {
+            printf("Processo bloqueado não encontrado na tabela de processos.\n");
+            continue;
+        }
+
+        // Diminuir o tempo de bloqueio
+        processo->tempoBloqueio--;
+
+        // Se o tempo de bloqueio acabou, mover o processo para a lista de prontos
+        if (processo->tempoBloqueio <= 0) {
+            processo->EstadosProcesso = Pronto;
+            gerenciador->listaProntos[gerenciador->tamListaProntos++] = processoID;
+
+            // Remover o processo da lista de bloqueados
+            for (int k = i; k < gerenciador->tamListaBloqueados - 1; k++) {
+                gerenciador->listaBloqueados[k] = gerenciador->listaBloqueados[k + 1];
+            }
+            gerenciador->tamListaBloqueados--;
+            i--;  // Ajustar o índice para verificar a próxima posição correta na próxima iteração
+        }
+    }
+}
+
+void comandoF(GerenciadorProcessos *gerenciador, int valor)
+{
+    ProcessoSimulado *novoProcesso = inicializaProcesso(gerenciador->conjuntoInstrucoes, valor, gerenciador->TabelaProcessos.ultimoProcessoIndex + 1, 0);
+    inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
+    gerenciador->listaProntos[gerenciador->tamListaProntos++] = novoProcesso->ID_Processo;
+    printf("Processo %d criado.\n", novoProcesso->ID_Processo);
+}
+
 void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao)
 {
     switch (instrucao.comando)
     {
     case 'N':
         // criar vetor de memória
+        if (gerenciador->Execucao == -1)
+        {
+            printf("Não há processo em execução.\n");
+            break;
+        }
         comandoN(&(gerenciador->cpu), instrucao.valor);
         break;
     case 'D':
         // Declara uma nova variável no processo atual
+        if (gerenciador->Execucao == -1)
+        {
+            printf("Não há processo em execução.\n");
+            break;
+        }
         comandoD(&(gerenciador->cpu), instrucao.valor); 
         break;
     case 'V':
         // Define o valor de uma variável
+        if (gerenciador->Execucao == -1)
+        {
+            printf("Não há processo em execução.\n");
+            break;
+        }
         comandoV(&(gerenciador->cpu), instrucao.index, instrucao.valor);
         break;
     case 'A':
         // Adiciona valor a uma variável
+        if (gerenciador->Execucao == -1)
+        {
+            printf("Não há processo em execução.\n");
+            break;
+        }
         comandoA(&(gerenciador->cpu), instrucao.index, instrucao.valor);
         break;
     case 'S':
         // Subtrai valor de uma variável
+        if (gerenciador->Execucao == -1)
+        {
+            printf("Não há processo em execução.\n");
+            break;
+        }
         comandoS(&(gerenciador->cpu), instrucao.index, instrucao.valor);
         break;
     case 'B':
         // Bloqueia o processo
+        if (gerenciador->Execucao == -1)
+        {
+            printf("Não há processo em execução.\n");
+            break;
+        }
+        printf("Bloqueando processo %d por %d unidades de tempo.\n", gerenciador->Execucao, instrucao.valor);
+        trocaProcessoParaBloqueado(gerenciador, instrucao.valor);
         break;
     case 'T':
         // Termina o processo atual
         break;
     case 'F':
         // Cria um novo processo simulado
+        comandoF(gerenciador, instrucao.valor);
         break;
     case 'R':
         // Substitui o programa do processo simulado
@@ -130,16 +257,23 @@ void iniciarCPU(GerenciadorProcessos *gerenciador)
     iniciarVetorMemoria(gerenciador);
 }
 
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada)
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int pid)
 {
     inicializarTempo(&gerenciador->tempoAtual);
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
+
     gerenciador->listaProntos = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
     gerenciador->listaBloqueados = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
+
+    gerenciador->tamListaProntos = 0;
+    gerenciador->tamListaBloqueados = 0;
+    gerenciador->intrucaoAtual = 0;
+
+    gerenciador->conjuntoInstrucoes = arquivoEntrada;
     //gerenciador->TabelaProcessos.listaProcessos[0] = inicializaProcesso(arquivoEntrada);
-    
+
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
-    inserirTabelaProcessos(inicializaProcesso(arquivoEntrada), &(gerenciador->TabelaProcessos));
+    inserirTabelaProcessos(inicializaProcesso(arquivoEntrada, pid), &(gerenciador->TabelaProcessos));
 
     gerenciador->listaProntos[0] = 0; // index do primeiro processo criado
     gerenciador->Execucao = -1; // nenhum processo em execução
@@ -207,6 +341,7 @@ Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha) 
             switch (cmd) {
                 case 'N':
                 case 'D':
+                case 'B':
                 case 'F':
                     if (sscanf(linha + 2, "%d", &v1) == 1) {
                         // *valor = v1;
@@ -265,6 +400,7 @@ void comecaExecucao(GerenciadorProcessos *gerenciador) {
     }
 
     gerenciador->cpu.contadorPrograma = gerenciador->cpu.processoEmExecucao->PC;
+    gerenciador->Execucao = gerenciador->cpu.processoEmExecucao->ID_Processo;
 
     if(gerenciador->cpu.processoEmExecucao->memoria != NULL){
         gerenciador->cpu.memoriaVect = gerenciador->cpu.processoEmExecucao->memoria;
@@ -277,9 +413,17 @@ void comecaExecucao(GerenciadorProcessos *gerenciador) {
 
 void executarProcessoAtual(GerenciadorProcessos *gerenciador)
 {
+
     // Executa o processo atual
     Instrucao instrucao;
-    instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
+    
+    if(gerenciador->cpu.processoEmExecucao->memoria != NULL){
+        instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
+        processarComando(gerenciador, instrucao);
+    } else {
+        instrucao = processarLinhaEspecifica(gerenciador->conjuntoInstrucoes, (gerenciador->intrucaoAtual + 1));
+        processarComando(gerenciador, instrucao);
+    }
     
     processarComando(gerenciador, instrucao);
 }

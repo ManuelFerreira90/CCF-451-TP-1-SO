@@ -11,11 +11,15 @@ typedef struct GerenciadorProcessos
     tabelaProcessos TabelaProcessos;
     int *listaProntos;    // Lista de processos prontos
     int *listaBloqueados; // Lista de processos bloqueados
+    int tamListaProntos;
+    int tamListaBloqueados;
     int Execucao;   // Lista de processos em execução
+    int intrucaoAtual; // Instrução atual
+    char *conjuntoInstrucoes; // Conjunto de instruções
 } GerenciadorProcessos;
 
 // Declarações de funções e estruturas
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada);
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int pid);
 void iniciarCPU(GerenciadorProcessos *gerenciador);
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo);
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
@@ -34,6 +38,9 @@ void comandoN(CPU *cpu, int valor);
 void comandoV(CPU *cpu, int index, int valor);
 void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
+void comandoF(CPU *cpu, int valor);
 void printTableBorder();
+void atualizaTempoBloqueio(GerenciadorProcessos *gerenciador);
+void trocaProcessoParaBloqueado(GerenciadorProcessos *gerenciador, int n);
 
 #endif // GERENCIADOR_PROCESSOS_H

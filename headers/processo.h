@@ -21,8 +21,9 @@ typedef struct
     int *memoria;
     int quantidadeInteiros;
     char *conjuntoInstrucoes;
+    int tempoBloqueio;
 } ProcessoSimulado;
 
-ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes);
+ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes, int pid, int idProcesso, int pc);
 
 #endif // PROCESSO_H
