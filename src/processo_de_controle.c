@@ -101,6 +101,7 @@ int main() {
                         executarProcessoAtual(&gerenciador);
                         incrementarTempo(&gerenciador.cpu.tempoUsado);
                     }    
+                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
                     break;
                 case 'I':
                     printf("Imprimindo estado atual do sistema.\n");

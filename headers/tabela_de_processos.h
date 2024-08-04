@@ -19,5 +19,8 @@ void inicializarTabelaProcessos(tabelaProcessos *tabela);
 void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela);
 void retirarTabelaProcessos(int index, tabelaProcessos *tabela);
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista);
+void imprimeProcesso(ProcessoSimulado *processo);
+void imprimeTabelaProcessos(tabelaProcessos *tabela);
+const char* estadoToString(Estados estado);
 
 #endif
