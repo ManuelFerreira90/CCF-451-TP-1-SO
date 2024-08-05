@@ -75,6 +75,7 @@ int main() {
 
         /* Inicializar o Gerenciador de Processos */
         int comecou = 0;
+        int numCpus = 3;
         GerenciadorProcessos gerenciador;
         iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt");
         iniciarCPU(&gerenciador);
@@ -95,18 +96,22 @@ int main() {
                     // Chamar função do Gerenciador de Processos para avançar no tempo
                     if (comecou == 0) {
                         comecaExecucao(&gerenciador);
-                        incrementarTempo(&gerenciador.cpu.tempoUsado);
+                        incrementarTempo(&gerenciador.tempoAtual);
                         comecou = 1;
                     } else {
                         executarProcessoAtual(&gerenciador);
-                        incrementarTempo(&gerenciador.cpu.tempoUsado);
+                        incrementarTempo(&gerenciador.tempoAtual);
                     }    
                     imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
                     break;
                 case 'I':
                     printf("Imprimindo estado atual do sistema.\n");
                     // Chamar função do Gerenciador de Processos para imprimir o estado
-                    imprimeCPU(gerenciador.cpu);
+                    for (int i = 0; i < numCpus; i++)
+                    {
+                        imprimeCPU(gerenciador.cpus[i]);
+                    }
+                    
                     break;
                 case 'M':
                     printf("Imprimindo tempo médio de resposta e finalizando.\n");

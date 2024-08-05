@@ -11,13 +11,15 @@ typedef struct {
 } EstadosProcessos;
 
 typedef struct {
+    CPU *cpus; // Array de CPUs para múltiplos núcleos
+    int numNucleos;
     tabelaProcessos TabelaProcessos;
     EstadosProcessos EstadosProcessos;
-    int tempoAtual;
+    Tempo tempoAtual;
 } GerenciadorProcessos;
 
 // Declarações de funções e estruturas
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada);
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int numNucleos);
 void iniciarCPU(GerenciadorProcessos *gerenciador);
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo);
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
@@ -37,5 +39,6 @@ void comandoV(CPU *cpu, int index, int valor);
 void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
 void printTableBorder();
+int contarLinhasAntesDeF(const char *caminhoArquivo);
 
 #endif // GERENCIADOR_PROCESSOS_H

@@ -16,6 +16,8 @@ typedef struct
     pid_t ID_Processo;
     pid_t ID_Processo_Pai;
     int PC;
+    Tempo tempoInicio;
+    Tempo tempoCPU;
     Estados EstadosProcesso;
     int prioridade;
     int *memoria;
