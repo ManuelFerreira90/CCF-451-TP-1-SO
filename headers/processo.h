@@ -2,8 +2,7 @@
 #define PROCESSO_H
 
 #include "./tempo.h"
-#include "./instrucao.h"
-#include "./Fila.h"
+
 typedef enum
 {
     Bloqueado = 0,

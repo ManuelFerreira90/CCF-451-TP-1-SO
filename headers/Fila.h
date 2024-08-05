@@ -1,7 +1,6 @@
 #ifndef FILADINAMICA_H
 #define FILADINAMICA_H
 
-#define NUM_PRIORIDADES 4
 
 typedef struct node {
     int dado;
