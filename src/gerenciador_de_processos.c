@@ -156,15 +156,15 @@ void atualizaTempoBloqueio(GerenciadorProcessos *gerenciador) {
             gerenciador->tamListaBloqueados--;
             i--;  // Ajustar o índice para verificar a próxima posição correta na próxima iteração
         }
-        
+
         // Diminuir o tempo de bloqueio
         processo->tempoBloqueio--;
     }
 }
 
-void comandoF(GerenciadorProcessos *gerenciador, int valor)
+void comandoF(GerenciadorProcessos *gerenciador, int pip)
 {
-    ProcessoSimulado *novoProcesso = inicializaProcesso(gerenciador->conjuntoInstrucoes, valor, gerenciador->TabelaProcessos.ultimoProcessoIndex + 1, 0);
+    ProcessoSimulado *novoProcesso = inicializaProcesso(gerenciador->conjuntoInstrucoes, pip, gerenciador->TabelaProcessos.ultimoProcessoIndex++, 0);
     inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
     gerenciador->listaProntos[gerenciador->tamListaProntos++] = novoProcesso->ID_Processo;
     printf("Processo %d criado.\n", novoProcesso->ID_Processo);
@@ -234,7 +234,7 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao)
         break;
     case 'F':
         // Cria um novo processo simulado
-        comandoF(gerenciador, instrucao.valor);
+        comandoF(gerenciador, gerenciador->pid);
         break;
     case 'R':
         // Substitui o programa do processo simulado
@@ -271,6 +271,7 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     gerenciador->tamListaProntos = 0;
     gerenciador->tamListaBloqueados = 0;
     gerenciador->intrucaoAtual = 0;
+    gerenciador->pid = pid;
 
     gerenciador->conjuntoInstrucoes = arquivoEntrada;
     //gerenciador->TabelaProcessos.listaProcessos[0] = inicializaProcesso(arquivoEntrada);
@@ -428,5 +429,4 @@ void executarProcessoAtual(GerenciadorProcessos *gerenciador)
         processarComando(gerenciador, instrucao);
     }
     
-    processarComando(gerenciador, instrucao);
 }

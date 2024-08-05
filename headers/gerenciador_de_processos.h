@@ -8,6 +8,7 @@ typedef struct GerenciadorProcessos
     CPU cpu;
     Tempo tempoAtual;
 
+    pid_t pid;
     tabelaProcessos TabelaProcessos;
     int *listaProntos;    // Lista de processos prontos
     int *listaBloqueados; // Lista de processos bloqueados
