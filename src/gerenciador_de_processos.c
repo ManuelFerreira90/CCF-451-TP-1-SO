@@ -156,6 +156,7 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao)
         break;
     case 'R':
         // Substitui o programa do processo simulado
+        
         break;
     default:
         printf("Comando desconhecido: %c\n", instrucao.comando);
@@ -279,6 +280,7 @@ Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha) 
                     //     // Recursivamente processar a primeira linha do novo arquivo
                     //     processarLinhaEspecifica(valor, index, comando, caminhoArquivoNovo, 1);
                     // }
+                    
                     break;
                 }
                 default:

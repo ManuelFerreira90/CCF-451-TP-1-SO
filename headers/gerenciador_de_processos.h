@@ -2,7 +2,7 @@
 #define GERENCIADOR_PROCESSOS_H
 
 #include "./tabela_de_processos.h"
-#include "./Fila.h"
+
 
 typedef struct {
     FilaDinamica filasProntos[NUM_PRIORIDADES];
