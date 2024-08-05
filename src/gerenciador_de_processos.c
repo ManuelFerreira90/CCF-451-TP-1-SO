@@ -35,6 +35,28 @@ void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador) {
     }
 }
 
+// Muda a prioridade de um processo para uma de menor prioridade
+void mudarPrioridadeProcesso(GerenciadorProcessos *gerenciador, int processoIndex) {
+    ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[processoIndex];
+    int prioridadeAtual = processo->prioridade;
+    
+    // Remover o processo da fila de prontos atual
+    desenfileirarDinamica(&gerenciador->EstadosProcessos.filasProntos[prioridadeAtual])
+
+    // Aumentar a prioridade do processo se não estiver na prioridade mais baixa
+    if (prioridadeAtual < NUM_PRIORIDADES - 1) {
+        processo->prioridade++;
+        printf("Mudando processo PID %d para prioridade %d\n", processo->PID, processo->prioridade);
+    } else {
+        printf("Processo PID %d já está na prioridade mais baixa\n", processo->PID);
+    }
+
+    // Adicionar o processo na fila de prontos da nova prioridade
+    enfileirarDinamica(&gerenciador->EstadosProcessos.filasProntos[processo->prioridade], processoIndex)
+}
+
+
+
 // REAVALIAR A QUESTÃO DE TERMINAR
 // Termina o processo em execução 
 void terminarProcessoSimulado(GerenciadorProcessos *gerenciador) {
@@ -298,5 +320,16 @@ void executarProcessoAtual(GerenciadorProcessos *gerenciador) {
         processoAtual->PC++;
     } else {
         printf("Erro: nenhum processo em execução!\n");
+    }
+}
+
+void avaliarTempoProcesso(GerenciadorProcessos *gerenciador, int tempoDeterminado) {
+    int processoIndex = gerenciador->EstadosProcessos.processoEmExecucao;
+    if (processoIndex != -1) {
+        ProcessoSimulado *processoAtual = gerenciador->TabelaProcessos.listaProcessos[processoIndex];
+        if ((gerenciador->tempoAtual - processoAtual->tempoInicio) >= tempoDeterminado && processoAtual->estado != TERMINADO) {
+            mudarPrioridadeProcesso(gerenciador, processoIndex);
+            gerenciador->EstadosProcessos.processoEmExecucao = -1;
+        }
     }
 }
