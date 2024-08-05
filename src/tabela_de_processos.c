@@ -51,6 +51,8 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
     return lista_indices;
 }
 
+
+
 // Função auxiliar para converter o estado do processo em uma string
 const char* estadoToString(Estados estado) {
     switch (estado) {

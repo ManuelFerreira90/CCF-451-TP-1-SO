@@ -1,10 +1,12 @@
 #include "../headers/gerenciador_de_processos.h"
 
-void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo)
-{
-    // Adiciona o processo à fila de prontos
-    // Implementar lógica para adicionar à lista de processos prontos
+// Adiciona um processo à fila de prontos, baseado na sua prioridade
+void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, int processoIndex) {
+    int prioridade = gerenciador->TabelaProcessos.listaProcessos[processoIndex]->prioridade;
+    enfileirarDinamica(&(gerenciador->EstadosProcessos.filasProntos[prioridade]), processoIndex);
+    gerenciador->TabelaProcessos.listaProcessos[processoIndex]->estado = PRONTO;
 }
+
 
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n)
 {
@@ -15,31 +17,55 @@ void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n)
     adicionarProcessoPronto(gerenciador, novoProcesso);
 }
 
-void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, ProcessoSimulado *processo, int tempo)
-{
-    // Adiciona o processo à fila de bloqueados
-    // Implementar lógica para adicionar à lista de processos bloqueados
+// Adiciona um processo à fila de bloqueados, baseado na sua prioridade
+void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoIndex) {
+    int prioridade = gerenciador->TabelaProcessos.listaProcessos[processoIndex]->prioridade;
+    enfileirarDinamica(&(gerenciador->EstadosProcessos.filasBloqueados[prioridade]), processoIndex);
+    gerenciador->TabelaProcessos.listaProcessos[processoIndex]->estado = BLOQUEADO;
 }
 
-void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo)
-{
-    // Move o processo atual para a fila de bloqueados
-    // if (gerenciador->processoAtual)
-    // {
-    //     adicionarProcessoBloqueado(gerenciador, gerenciador->processoAtual, tempo);
-    //     gerenciador->processoAtual = NULL;
-    // }
+// Move o processo em execução para a fila de bloqueados
+void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador) {
+    int processoIndex = gerenciador->EstadosProcessos.processoEmExecucao;
+    if (processoIndex != -1) {
+        adicionarProcessoBloqueado(gerenciador, processoIndex);
+        gerenciador->EstadosProcessos.processoEmExecucao = -1;
+    } else {
+        printf("Erro: nenhum processo em execução para ser bloqueado!\n");
+    }
 }
 
-void terminarProcessoSimulado(GerenciadorProcessos *gerenciador)
-{
-    // Remove o processo atual
-    // if (gerenciador->processoAtual)
-    // {
-    //     free(gerenciador->processoAtual->memoria);
-    //     free(gerenciador->processoAtual);
-    //     gerenciador->processoAtual = NULL;
-    // }
+// REAVALIAR A QUESTÃO DE TERMINAR
+// Termina o processo em execução 
+void terminarProcessoSimulado(GerenciadorProcessos *gerenciador) {
+    int processoIndex = gerenciador->EstadosProcessos.processoEmExecucao;
+    if (processoIndex != -1) {
+        gerenciador->TabelaProcessos.listaProcessos[processoIndex]->estado = TERMINADO;
+        gerenciador->EstadosProcessos.processoEmExecucao = -1;
+    } else {
+        printf("Erro: nenhum processo em execução para ser terminado!\n");
+    }
+}
+
+// Cria novos processos simulados
+void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n) {
+    for (int i = 0; i < n; i++) {
+        ProcessoSimulado *novoProcesso = (ProcessoSimulado *)malloc(sizeof(ProcessoSimulado));
+        // Inicialização do novo processo simulado
+        novoProcesso->PID = gerenciador->TabelaProcessos.ultimoProcessoIndex + 1;
+        novoProcesso->PIDPai = 0; // ID do processo pai, pode ser ajustado conforme necessário
+        novoProcesso->PC = 0; // Inicialmente, o contador de programa é 0
+        novoProcesso->conjuntoInstrucoes = NULL; // Inicializar conforme necessário
+        novoProcesso->prioridade = rand() % NUM_PRIORIDADES; // Exemplo de atribuição de prioridade aleatória
+        novoProcesso->estado = PRONTO;
+        novoProcesso->tempoInicio = gerenciador->tempoAtual;
+        novoProcesso->tempoCPU = 0;
+
+        // Adiciona o processo à tabela de processos
+        inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
+        // Adiciona o processo à fila de prontos
+        adicionarProcessoPronto(gerenciador, gerenciador->TabelaProcessos.ultimoProcessoIndex);
+    }
 }
 
 void comandoD(CPU *cpu, int index)
@@ -134,15 +160,17 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
 {
     inicializarTempo(&gerenciador->tempoAtual);
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
-    gerenciador->listaProntos = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
-    gerenciador->listaBloqueados = (int *)malloc(sizeof(int) * TAMANHO_MEMORIA);
-    //gerenciador->TabelaProcessos.listaProcessos[0] = inicializaProcesso(arquivoEntrada);
     
+    for (int i = 0; i < NUM_PRIORIDADES; i++) {
+        inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasProntos[i]));
+        inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasBloqueados[i]));
+    }
+
+    gerenciador->EstadosProcessos.processoEmExecucao = -1;
+    gerenciador->tempoAtual = 0;
+
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     inserirTabelaProcessos(inicializaProcesso(arquivoEntrada), &(gerenciador->TabelaProcessos));
-
-    gerenciador->listaProntos[0] = 0; // index do primeiro processo criado
-    gerenciador->Execucao = -1; // nenhum processo em execução
 }
 
 void printTableBorder() {
@@ -248,38 +276,27 @@ Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha) 
     return instrucao;
 }
 
-
-
+// Inicia a execução do próximo processo pronto, baseado na prioridade
 void comecaExecucao(GerenciadorProcessos *gerenciador) {
-
-    // Inicializa o processo atual
-    for (int i = 0; i < MAX_PROCESSOS; i++)
-    {
-        if (gerenciador->TabelaProcessos.listaProcessos[i] != NULL && i == gerenciador->listaProntos[0])
-        {
-            gerenciador->cpu.processoEmExecucao = gerenciador->TabelaProcessos.listaProcessos[i];
-            gerenciador->TabelaProcessos.listaProcessos[i]->EstadosProcesso = Execucao;
-            gerenciador->listaProntos[0] = -1;
-            break;
+    for (int i = 0; i < NUM_PRIORIDADES; i++) {
+        if (!isFilaDinamicaVazia(&(gerenciador->EstadosProcessos.filasProntos[i]))) {
+            gerenciador->EstadosProcessos.processoEmExecucao = desenfileirarDinamica(&(gerenciador->EstadosProcessos.filasProntos[i]));
+            gerenciador->TabelaProcessos.listaProcessos[gerenciador->EstadosProcessos.processoEmExecucao]->estado = EXECUTANDO;
+            return;
         }
     }
-
-    gerenciador->cpu.contadorPrograma = gerenciador->cpu.processoEmExecucao->PC;
-
-    if(gerenciador->cpu.processoEmExecucao->memoria != NULL){
-        gerenciador->cpu.memoriaVect = gerenciador->cpu.processoEmExecucao->memoria;
-    } else {
-        Instrucao instrucao;
-        instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
-        processarComando(gerenciador, instrucao);
-    }/* code */
+    printf("Erro: não há processos prontos para execução!\n");
 }
 
-void executarProcessoAtual(GerenciadorProcessos *gerenciador)
-{
-    // Executa o processo atual
-    Instrucao instrucao;
-    instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
-    
-    processarComando(gerenciador, instrucao);
+// Executa o processo atual
+void executarProcessoAtual(GerenciadorProcessos *gerenciador) {
+    int processoIndex = gerenciador->EstadosProcessos.processoEmExecucao;
+    if (processoIndex != -1) {
+        ProcessoSimulado *processoAtual = gerenciador->TabelaProcessos.listaProcessos[processoIndex];
+        Instrucao instrucao = processarLinhaEspecifica(processoAtual->conjuntoInstrucoes, processoAtual->PC + 1);
+        processarComando(gerenciador, instrucao);
+        processoAtual->PC++;
+    } else {
+        printf("Erro: nenhum processo em execução!\n");
+    }
 }

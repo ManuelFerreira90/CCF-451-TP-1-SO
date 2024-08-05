@@ -2,16 +2,18 @@
 #define GERENCIADOR_PROCESSOS_H
 
 #include "./tabela_de_processos.h"
+#include "./Fila.h"
 
-typedef struct GerenciadorProcessos
-{
-    CPU cpu;
-    Tempo tempoAtual;
+typedef struct {
+    FilaDinamica filasProntos[NUM_PRIORIDADES];
+    FilaDinamica filasBloqueados[NUM_PRIORIDADES];
+    int processoEmExecucao;
+} EstadosProcessos;
 
+typedef struct {
     tabelaProcessos TabelaProcessos;
-    int *listaProntos;    // Lista de processos prontos
-    int *listaBloqueados; // Lista de processos bloqueados
-    int Execucao;   // Lista de processos em execução
+    EstadosProcessos EstadosProcessos;
+    int tempoAtual;
 } GerenciadorProcessos;
 
 // Declarações de funções e estruturas

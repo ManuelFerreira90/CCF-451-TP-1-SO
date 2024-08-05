@@ -33,7 +33,7 @@ int main() {
 
         if (escolha == 'f') {
             // Se a escolha for arquivo, abrir o arquivo init.txt
-            file_fd = open("entry/init.txt", O_RDONLY);
+            file_fd = open("entry/input1.txt", O_RDONLY);
             if (file_fd < 0) {
                 perror("open");
                 exit(1);
