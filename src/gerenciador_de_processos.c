@@ -141,11 +141,11 @@ void atualizaTempoBloqueio(GerenciadorProcessos *gerenciador) {
             continue;
         }
 
-        // Diminuir o tempo de bloqueio
-        processo->tempoBloqueio--;
+        printf("Tempo de bloqueio do processo %d: %d\n", processoID, processo->tempoBloqueio);
 
         // Se o tempo de bloqueio acabou, mover o processo para a lista de prontos
-        if (processo->tempoBloqueio <= 0) {
+        if (processo->tempoBloqueio == 0) {
+            printf("Processo %d foi desbloqueado.\n", processoID);
             processo->EstadosProcesso = Pronto;
             gerenciador->listaProntos[gerenciador->tamListaProntos++] = processoID;
 
@@ -156,6 +156,9 @@ void atualizaTempoBloqueio(GerenciadorProcessos *gerenciador) {
             gerenciador->tamListaBloqueados--;
             i--;  // Ajustar o índice para verificar a próxima posição correta na próxima iteração
         }
+        
+        // Diminuir o tempo de bloqueio
+        processo->tempoBloqueio--;
     }
 }
 
@@ -273,7 +276,7 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     //gerenciador->TabelaProcessos.listaProcessos[0] = inicializaProcesso(arquivoEntrada);
 
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
-    inserirTabelaProcessos(inicializaProcesso(arquivoEntrada, pid), &(gerenciador->TabelaProcessos));
+    inserirTabelaProcessos(inicializaProcesso(arquivoEntrada, pid, 0, 0), &(gerenciador->TabelaProcessos));
 
     gerenciador->listaProntos[0] = 0; // index do primeiro processo criado
     gerenciador->Execucao = -1; // nenhum processo em execução
@@ -417,7 +420,7 @@ void executarProcessoAtual(GerenciadorProcessos *gerenciador)
     // Executa o processo atual
     Instrucao instrucao;
     
-    if(gerenciador->cpu.processoEmExecucao->memoria != NULL){
+    if(gerenciador->Execucao != -1){
         instrucao = processarLinhaEspecifica(gerenciador->cpu.processoEmExecucao->conjuntoInstrucoes, (gerenciador->cpu.contadorPrograma + 1));
         processarComando(gerenciador, instrucao);
     } else {

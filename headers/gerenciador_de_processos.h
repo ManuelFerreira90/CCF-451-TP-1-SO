@@ -38,7 +38,7 @@ void comandoN(CPU *cpu, int valor);
 void comandoV(CPU *cpu, int index, int valor);
 void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
-void comandoF(CPU *cpu, int valor);
+void comandoF(GerenciadorProcessos *gerenciador, int valor);
 void printTableBorder();
 void atualizaTempoBloqueio(GerenciadorProcessos *gerenciador);
 void trocaProcessoParaBloqueado(GerenciadorProcessos *gerenciador, int n);

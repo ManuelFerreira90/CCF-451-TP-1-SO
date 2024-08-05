@@ -100,8 +100,8 @@ int main() {
                     } else {
                         executarProcessoAtual(&gerenciador);
                         incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    }  
-                    atualizaTempoBloqueio(&(gerenciador));  
+                        atualizaTempoBloqueio(&(gerenciador));
+                    }    
                     imprimeTabelaProcessos(&(gerenciador.TabelaProcessos));
                     gerenciador.intrucaoAtual++;
                     break;
@@ -113,10 +113,6 @@ int main() {
                 case 'M':
                     printf("Imprimindo tempo médio de resposta e finalizando.\n");
                     // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
-                    free(gerenciador.listaProntos);
-                    free(gerenciador.listaBloqueados);
-                    free(gerenciador.conjuntoInstrucoes);
-                    free(&gerenciador.TabelaProcessos);
                     break;
                 default:
                     printf("Comando desconhecido: %c\n", str_recebida[0]);
