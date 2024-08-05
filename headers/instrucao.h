@@ -6,6 +6,7 @@ typedef struct Instrucao
     char comando;
     int index;
     int valor;
+    char arquivo[MAX_CMD_LEN];
 } Instrucao;
 
 
