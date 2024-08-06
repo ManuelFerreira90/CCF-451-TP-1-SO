@@ -26,7 +26,6 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai){
     ProcessoSimulado *novoProcesso = (ProcessoSimulado *)malloc(sizeof(ProcessoSimulado));
     if (!novoProcesso) {
         fprintf(stderr, "Erro ao alocar memória para novo processo.\n");
-        exit(EXIT_FAILURE);
     }
 
     novoProcesso->ID_Processo = processoPai->ID_Processo + 1;
@@ -39,7 +38,6 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai){
     if (!novoProcesso->memoria) {
         fprintf(stderr, "Erro ao alocar memória para vetor de valores inteiros do novo processo.\n");
         free(novoProcesso);
-        exit(EXIT_FAILURE);
     }
     memcpy(novoProcesso->memoria, processoPai->memoria, sizeof(int) * processoPai->quantidadeInteiros);
     novoProcesso->quantidadeInteiros = processoPai->quantidadeInteiros;
@@ -49,7 +47,6 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai){
         fprintf(stderr, "Erro ao alocar memória para conjunto de instruções do novo processo.\n");
         free(novoProcesso->memoria);
         free(novoProcesso);
-        exit(EXIT_FAILURE);
     }
     novoProcesso->quantidadeInstrucao = processoPai->quantidadeInstrucao;
 

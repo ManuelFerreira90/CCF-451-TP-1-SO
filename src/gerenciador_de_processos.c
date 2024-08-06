@@ -120,9 +120,8 @@ void comandoD(CPU *cpu, int index)
 
 void comandoN(CPU *cpu, int valor)
 {
-
     cpu->memoriaVect = (int *)malloc(valor * sizeof(int));
-    cpu->quantidadeInteiros = valor;
+    cpu->quantidadeInteiros = &(valor);
     cpu->contadorPrograma++;
 }
 
@@ -146,13 +145,16 @@ void comandoS(CPU *cpu, int index, int valor)
 
 void comandoF(GerenciadorProcessos *gerenciador, int indexCPU, int valor)
 {
+
     ProcessoSimulado *novoProcesso = criarNovoProcessoAPartirdoPai(gerenciador->cpus[indexCPU].processoEmExecucao);
     inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
     adicionarProcessoPronto(gerenciador, gerenciador->TabelaProcessos.ultimoProcessoIndex);
     
-    novoProcesso->PC = gerenciador->cpus[indexCPU].contadorPrograma + 1;
+    novoProcesso->PC = *gerenciador->cpus[indexCPU].contadorPrograma + 1;
     gerenciador->cpus[indexCPU].contadorPrograma += valor;
-    novoProcesso->PC = gerenciador->cpus[indexCPU].contadorPrograma;
+    novoProcesso->PC = *gerenciador->cpus[indexCPU].contadorPrograma;
+
+    printf("Processo %d criado a partir do processo %d\n", novoProcesso->ID_Processo, gerenciador->cpus[indexCPU].processoEmExecucao->ID_Processo);
 }
 
 void comandoR(CPU *cpu, Instrucao instrucao)
@@ -195,6 +197,7 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, in
     case 'F':
         // Cria um novo processo simulado
         comandoF(gerenciador, indexCPU, instrucao.valor);
+        printf("Comando F\n");
         break;
     case 'R':
         // Substitui o programa do processo simulado
@@ -299,7 +302,7 @@ void imprimeCPU(CPU cpu, int index) {
     printTableBorder();
     printf("| %-32s %-3d |\n", "CPU Status", index); // Adicionado o índice aqui
     printTableBorder();
-    printf("| %-25s | %8d |\n", "Contador de programa", cpu.contadorPrograma);
+    printf("| %-25s | %8d |\n", "Contador de programa", *cpu.contadorPrograma);
     printTableBorder();
     printf("| %-25s | %8d |\n", "Fatia de tempo", cpu.fatiaTempo.valor);
     printTableBorder();
@@ -309,7 +312,7 @@ void imprimeCPU(CPU cpu, int index) {
     if (cpu.memoriaVect != NULL) {
         printf("| %-15s | %-18s |\n", "Index", "Valor");
         printTableBorder();
-        for (int i = 0; i < cpu.quantidadeInteiros; i++) {
+        for (int i = 0; i < *cpu.quantidadeInteiros; i++) {
             printf("|  %14d | %18d |\n", i, cpu.memoriaVect[i]);
         }
         printTableBorder();
@@ -413,15 +416,24 @@ int desenfileirarProcessoParaCPU(FilaDinamica *filaProntos)
 }
 void atualizarProcessoEmExecucao(GerenciadorProcessos *gerenciador, int cpuIndex, int processoId)
 {
-    gerenciador->cpus[cpuIndex].processoEmExecucao = getProcesso(&gerenciador->TabelaProcessos, processoId);
-    printf("CPU INDEX Processo: %d", gerenciador->cpus[cpuIndex].processoEmExecucao->ID_Processo);
-
+    ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoId);
+    
+    // Atualiza a CPU com o processo em execução
+    gerenciador->cpus[cpuIndex].processoEmExecucao = processo;
+    
+    // Atualiza os ponteiros da CPU para apontar para as variáveis do processo
+    gerenciador->cpus[cpuIndex].contadorPrograma = &(processo->PC);
+    gerenciador->cpus[cpuIndex].memoriaVect = processo->memoria;
+    gerenciador->cpus[cpuIndex].quantidadeInteiros = &(processo->quantidadeInteiros);
+    
+    // Atualiza as estruturas de gerenciamento de processos
     gerenciador->EstadosProcessos.filasEmExecucao[cpuIndex] = processoId;
-    gerenciador->cpus[cpuIndex].processoEmExecucao->EstadosProcesso = Execucao;
+    processo->EstadosProcesso = Execucao;
+    
+    printf("CPU INDEX Processo: %d\n", processo->ID_Processo);
     printf("Processo %d escolhido para a CPU %d\n", processoId, cpuIndex);
-
-    iniciarVetorMemoria(&gerenciador->cpus[cpuIndex]);
-    gerenciador->cpus[cpuIndex].contadorPrograma = gerenciador->cpus[cpuIndex].processoEmExecucao->PC;
+    
+    //iniciarVetorMemoria(&gerenciador->cpus[cpuIndex]);
 }
 
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
@@ -431,7 +443,7 @@ void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
     {
         if (gerenciador->cpus[i].processoEmExecucao != NULL)
         {
-            instrucao = processarLinhaEspecifica(gerenciador->cpus[i].processoEmExecucao->conjuntoInstrucoes, gerenciador->cpus[i].contadorPrograma + 1);
+            instrucao = processarLinhaEspecifica(gerenciador->cpus[i].processoEmExecucao->conjuntoInstrucoes, *gerenciador->cpus[i].contadorPrograma + 1);
             processarComando(gerenciador, instrucao, i);
             printf("%c,%d\n", instrucao.comando, instrucao.valor);
         }
@@ -485,7 +497,7 @@ void executarProcessoAtual(GerenciadorProcessos *gerenciador, int indexCPU)
 {
     if (gerenciador->cpus[indexCPU].processoEmExecucao != NULL)
     {
-        Instrucao instrucao = processarLinhaEspecifica(gerenciador->cpus[indexCPU].processoEmExecucao->conjuntoInstrucoes, gerenciador->cpus[indexCPU].contadorPrograma + 1);
+        Instrucao instrucao = processarLinhaEspecifica(gerenciador->cpus[indexCPU].processoEmExecucao->conjuntoInstrucoes, *(gerenciador->cpus[indexCPU].contadorPrograma) + 1);
         processarComando(gerenciador, instrucao, indexCPU);
     }
     else
@@ -511,9 +523,9 @@ void avaliarTempoProcesso(GerenciadorProcessos *gerenciador) {
                 gerenciador->EstadosProcessos.filasEmExecucao[i] = -1;
                 
                 processo->EstadosProcesso = Pronto;
-                processo->PC = gerenciador->cpus[i].contadorPrograma;
-                processo->memoria = gerenciador->cpus[i].memoriaVect;
-                processo->tempoCPU = gerenciador->cpus[i].tempoUsado;
+                // processo->PC = gerenciador->cpus[i].contadorPrograma;
+                // processo->memoria = gerenciador->cpus[i].memoriaVect;
+                // processo->tempoCPU = gerenciador->cpus[i].tempoUsado;
 
                 iniciarCPU(&gerenciador->cpus[i]);
                 
