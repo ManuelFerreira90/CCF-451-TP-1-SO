@@ -41,6 +41,12 @@ void comandoS(CPU *cpu, int index, int valor);
 void printTableBorder();
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador);
 
+
+void lerArquivo(char *arquivoEntrada);
+void lerTerminal(char* retorno);
+void remove_char(char *str, char garbage);
+
+
 int escolherProximoProcesso(GerenciadorProcessos *gerenciador);
 void trocarContexto(GerenciadorProcessos *gerenciador, int indexCPU, int proximoProcessoIndex);
 void escalonar(GerenciadorProcessos *gerenciador, int indexCPU);
