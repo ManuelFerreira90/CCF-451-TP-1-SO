@@ -220,19 +220,33 @@ int contar_linhas_antes_primeiro_F(const char *filename)
     return line_count; // Se não encontrou 'F', retorna o total de linhas
 }
 
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID) {
-    inicializarTabelaProcessos(&gerenciador->TabelaProcessos);
-    for (int i = 0; i < NUM_PRIORIDADES; i++) {
-        inicializarFilaDinamica(&gerenciador->EstadosProcessos.filasProntos[i]);
-        inicializarFilaDinamica(&gerenciador->EstadosProcessos.filasBloqueados[i]);
-    }
-    gerenciador->quantidadeCPUs = NUM_CPUs;
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai)
+{
     gerenciador->cpus = (CPU *)malloc(sizeof(CPU) * NUM_CPUs);
-    for (int i = 0; i < NUM_CPUs; i++) {
-        iniciarCPU(&gerenciador->cpus[i]);
+    gerenciador->quantidadeCPUs = NUM_CPUs;
+    inicializarTempo(&gerenciador->tempoAtual);
+    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
+
+    for (int i = 0; i < NUM_PRIORIDADES; i++)
+    {
+        inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasProntos[i]));
+        inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasBloqueados[i]));
     }
-    gerenciador->tempoAtual.valor = 0;
-    criarProcessoSimulado(gerenciador, PID);
+
+    for (int i = 0; i < NUM_CPUs; i++)
+    {
+        // iniciarCPU(&gerenciador->cpus[i]);
+        gerenciador->EstadosProcessos.filasEmExecucao[i] = -1;
+    }
+
+    // gerenciador->EstadosProcessos.processoEmExecucao = -1;
+    inicializarTempo(&gerenciador->tempoAtual);
+
+    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
+    ProcessoSimulado  * processo = inicializaProcesso(arquivoEntrada,contar_linhas_antes_primeiro_F(arquivoEntrada),PID_Pai,0);
+    printf("ID Processo Criado: %d",processo->ID_Processo);
+    inserirTabelaProcessos(processo, &(gerenciador->TabelaProcessos));
+    adicionarProcessoPronto(gerenciador, 0);
 }
 
 void printTableBorder()

@@ -1,15 +1,20 @@
 #define BUFFER 1 // Lendo um caractere por vez
 
 #include "../headers/gerenciador_de_processos.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 int main() {
     int fd[2]; /* Descritores de arquivo para o Pipe */
     pid_t pid; /* Variável para armazenar o PID */
-    int file_fd; /* Descritor de arquivo para o init.txt */
+    int file_fd; /* Descritor de arquivo para init.txt */
     char buffer[BUFFER];
     ssize_t bytes_read;
     char escolha;
-    FILE *entrada = stdin; // Por padrão, lê da entrada padrão
 
     /* Criando o Pipe */
     if (pipe(fd) < 0) {
@@ -27,9 +32,12 @@ int main() {
     if (pid > 0) {
         /* No pai, ler comandos e escrever no Pipe */
         close(fd[0]); // Fechar a leitura do Pipe no lado do pai
+
         printf("Escolha a entrada (a: entrada padrão, f: arquivo): ");
+        fflush(stdout); // Garantir que a saída seja impressa imediatamente
         escolha = getchar();
-        getchar(); // Consome o newline após a escolha
+        getchar(); // Consumir o caractere de nova linha após a escolha
+        printf("Escolha lida: %c\n", escolha);
 
         if (escolha == 'f') {
             // Se a escolha for arquivo, abrir o arquivo init.txt
@@ -46,6 +54,7 @@ int main() {
             while ((bytes_read = read(file_fd, buffer, BUFFER)) > 0) {
                 if (write(fd[1], buffer, bytes_read) < 0) {
                     perror("write");
+                    close(file_fd);
                     exit(1);
                 }
             }
@@ -70,13 +79,13 @@ int main() {
     }
     /* Processo Filho */
     else {
-        char str_recebida[BUFFER];
+        char str_recebida[BUFFER + 1]; // +1 para o terminador nulo
         ssize_t bytes_read;
 
         /* Inicializar o Gerenciador de Processos */
-        int comecou = 0;
+        printf("Iniciando o Gerenciador de Processos...\n");
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt",getpid());
+        iniciarGerenciadorProcessos(&gerenciador, "./entry/input1.txt", getpid());
         comecaExecucao(&gerenciador);
 
         /* No filho, ler do Pipe e processar comandos */
