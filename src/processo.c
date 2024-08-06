@@ -15,6 +15,9 @@ ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes, int quantidadeIns
     processo->memoria = NULL;
     processo->ID_Processo = ID;
     processo->ID_Processo_Pai = PID_Pai;
+    processo->tempoInicio.valor = 0;
+    processo->tempoCPU.valor = 0;
+    processo->quantidadeInteiros = 0;
 
     processo->quantidadeInstrucao = quantidadeInstrucao;
     processo->conjuntoInstrucoes = conjuntoInstrucoes;

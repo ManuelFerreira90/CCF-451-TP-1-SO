@@ -34,10 +34,11 @@ void colocaProcessoNaCPU(GerenciadorProcessos *gerenciador, int indexCPU);
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador);
 void avaliarTempoProcesso(GerenciadorProcessos *gerenciador);
 int existeProcessoEmAlgumaCPU(GerenciadorProcessos *gerenciador);
-
+void atualizaDadosProcesso(CPU *cpu);
 void imprimirInstrucoes(ProcessoSimulado *processo);
+void avaliarCPUVazia(GerenciadorProcessos *gerenciador);
 
-Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha);
+Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha);
 
 void iniciarVetorMemoria(CPU * cpu);
 

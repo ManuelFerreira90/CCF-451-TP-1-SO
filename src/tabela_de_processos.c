@@ -1,49 +1,65 @@
 #include "../headers/tabela_de_processos.h"
 
-int isTabelaProcessosVazia(tabelaProcessos *tabela){
+int isTabelaProcessosVazia(tabelaProcessos *tabela)
+{
     return tabela->ultimoProcessoIndex == 0;
 }
 
-int isTabelaProcessosCheia(tabelaProcessos *tabela){
+int isTabelaProcessosCheia(tabelaProcessos *tabela)
+{
     return tabela->ultimoProcessoIndex >= MAX_PROCESSOS;
 }
 
-int getTamanhoTabelaProcessos(tabelaProcessos *tabela){
+int getTamanhoTabelaProcessos(tabelaProcessos *tabela)
+{
     return tabela->ultimoProcessoIndex;
 }
 
-void inicializarTabelaProcessos(tabelaProcessos *tabela){
+void inicializarTabelaProcessos(tabelaProcessos *tabela)
+{
     tabela->primeiroProcessoIndex = 0;
     tabela->ultimoProcessoIndex = tabela->primeiroProcessoIndex;
 }
 
-void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela) { 
-    if (!isTabelaProcessosCheia(tabela)) {
+void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
+{
+    if (!isTabelaProcessosCheia(tabela))
+    {
         tabela->listaProcessos[tabela->ultimoProcessoIndex] = processo;
+        printf("Processo novo inserido na posicao %d ",tabela->listaProcessos[tabela->ultimoProcessoIndex]->ID_Processo);
         tabela->ultimoProcessoIndex++;
-        printf("Tabela %d ",tabela->listaProcessos[0]->ID_Processo);
-            } else {
+    }
+    else
+    {
         fprintf(stderr, "Erro: Tabela de processos cheia!\n");
     }
 }
 
-void retirarTabelaProcessos(int index, tabelaProcessos *tabela) { 
-    if (!isTabelaProcessosVazia(tabela) && index >= 0 && index < tabela->ultimoProcessoIndex) {
-        for (int i = index; i < tabela->ultimoProcessoIndex - 1; i++) {
+void retirarTabelaProcessos(int index, tabelaProcessos *tabela)
+{
+    if (!isTabelaProcessosVazia(tabela) && index >= 0 && index < tabela->ultimoProcessoIndex)
+    {
+        for (int i = index; i < tabela->ultimoProcessoIndex - 1; i++)
+        {
             tabela->listaProcessos[i] = tabela->listaProcessos[i + 1];
         }
         tabela->ultimoProcessoIndex--;
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Erro: Índice inválido ou tabela de processos vazia!\n");
     }
 }
 
-int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista){
+int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista)
+{
     int tamanhoTabela = getTamanhoTabelaProcessos(tabela);
-    int *lista_indices = (int*) malloc(sizeof(int) * tamanhoTabela);
+    int *lista_indices = (int *)malloc(sizeof(int) * tamanhoTabela);
     int indice_lista = 0;
-    for(int x = 0; x < tamanhoTabela; x++){
-        if(tabela->listaProcessos[x]->EstadosProcesso == estado){
+    for (int x = 0; x < tamanhoTabela; x++)
+    {
+        if (tabela->listaProcessos[x]->EstadosProcesso == estado)
+        {
             lista_indices[indice_lista] = x;
             indice_lista++;
         }
@@ -52,13 +68,16 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
     return lista_indices;
 }
 
-ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice) {
-    if (indice < 0 || indice >= MAX_PROCESSOS) {
+ProcessoSimulado *getProcesso(tabelaProcessos *tabela, int indice)
+{
+    if (indice < 0 || indice >= MAX_PROCESSOS)
+    {
         // Se o índice for inválido, retorna NULL ou trata o erro conforme desejado.
         return NULL;
     }
 
-    if (tabela->listaProcessos[indice] == NULL) {
+    if (tabela->listaProcessos[indice] == NULL)
+    {
         // Se o processo no índice não existe, retorna NULL ou trata o erro conforme desejado.
         return NULL;
     }
@@ -66,20 +85,27 @@ ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice) {
     return tabela->listaProcessos[indice];
 }
 
-
 // Função auxiliar para converter o estado do processo em uma string
-const char* estadoToString(Estados estado) {
-    switch (estado) {
-        case Bloqueado: return "Bloqueado";
-        case Pronto: return "Pronto";
-        case Execucao: return "Execução";
-        default: return "Desconhecido";
+const char *estadoToString(Estados estado)
+{
+    switch (estado)
+    {
+    case Bloqueado:
+        return "Bloqueado";
+    case Pronto:
+        return "Pronto";
+    case Execucao:
+        return "Execução";
+    default:
+        return "Desconhecido";
     }
 }
 
 // Função para imprimir um único processo
-void imprimeProcesso(ProcessoSimulado *processo) {
-    if (processo != NULL) {
+void imprimeProcesso(ProcessoSimulado *processo)
+{
+    if (processo != NULL)
+    {
         printf("| %-11d | %-14d | %-10d | %-11s | %-10d |\n",
                processo->ID_Processo,
                processo->ID_Processo_Pai,
@@ -90,17 +116,19 @@ void imprimeProcesso(ProcessoSimulado *processo) {
 }
 
 // Função para imprimir a tabela de processos
-void imprimeTabelaProcessos(tabelaProcessos *tabela) {
+void imprimeTabelaProcessos(tabelaProcessos *tabela)
+{
     printf("+-------------+----------------+------------+-------------+------------+\n");
     printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
     printf("+-------------+----------------+------------+-------------+------------+\n");
 
-    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++) {
-        if (tabela->listaProcessos[i] != NULL) {
+    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
+    {
+        if (tabela->listaProcessos[i] != NULL)
+        {
             imprimeProcesso(tabela->listaProcessos[i]);
         }
     }
 
     printf("+-------------+----------------+------------+-------------+------------+\n");
 }
-

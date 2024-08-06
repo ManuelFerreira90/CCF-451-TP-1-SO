@@ -93,17 +93,19 @@ int main() {
             switch (str_recebida[0]) {
                 case 'U':
                     printf("Fim de uma unidade de tempo.\n");
-                    
+
                     // verificando se a processos na CPU
                     if (existeProcessoEmAlgumaCPU(&gerenciador) == 1)
                     {
-                        avaliarTempoProcesso(&gerenciador);
                         executandoProcessoCPU(&gerenciador);
+                        avaliarTempoProcesso(&gerenciador);
                     }
                     else
                     {
-                        printf("Não há processos em execução.\n");
+                        // printf("Não há processos em execução.\n");
                     }
+
+                    avaliarCPUVazia(&gerenciador);
                     break;
                 case 'I':
 

@@ -3,18 +3,17 @@
 
 #include "./processo.h"
 
-    typedef struct CPU
-    {
-        int *contadorPrograma; // Valor atual do contadorPrograma
-        int *memoriaVect;     // Vetor de Memória
-        Tempo fatiaTempo;
-        Tempo tempoUsado;
-        int *quantidadeInteiros;
-        ProcessoSimulado *processoEmExecucao;
-    } CPU;
+typedef struct CPU
+{
+    int contadorPrograma; // Valor atual do contadorPrograma
+    int *memoriaVect;     // Vetor de Memória
+    Tempo fatiaTempo;
+    Tempo tempoUsado;
+    int quantidadeInteiros;
+    ProcessoSimulado *processoEmExecucao;
+} CPU;
 
-
-void iniciarCPU(CPU * cpu);
+void iniciarCPU(CPU *cpu);
 void imprimeCPU(CPU cpu, int index);
 
 #endif
