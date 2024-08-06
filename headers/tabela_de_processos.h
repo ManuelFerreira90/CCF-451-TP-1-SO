@@ -12,6 +12,9 @@ typedef struct tabelaProcessos
 } tabelaProcessos;
 
 // Funções de gerenciamento da tabela de processos
+// Declarações de funções e estruturas
+//---------------------------------------------------------------------------------------
+
 int isTabelaProcessosVazia(tabelaProcessos *tabela);
 int isTabelaProcessosCheia(tabelaProcessos *tabela);
 int getTamanhoTabelaProcessos(tabelaProcessos *tabela);
@@ -23,4 +26,7 @@ void imprimeProcesso(ProcessoSimulado *processo);
 void imprimeTabelaProcessos(tabelaProcessos *tabela);
 const char* estadoToString(Estados estado);
 ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice);
+
+//---------------------------------------------------------------------------------------
+
 #endif

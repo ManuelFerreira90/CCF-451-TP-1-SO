@@ -1,8 +1,8 @@
 #ifndef PROCESSO_H
 #define PROCESSO_H
 
-#include "./tempo.h"
 #include "./Fila.h"
+
 typedef enum
 {
     Bloqueado = 0,
@@ -27,6 +27,11 @@ typedef struct
 
 } ProcessoSimulado;
 
+// Declarações de funções e estruturas
+//---------------------------------------------------------------------------------------
+
 ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int,int);
+
+//---------------------------------------------------------------------------------------
 
 #endif // PROCESSO_H

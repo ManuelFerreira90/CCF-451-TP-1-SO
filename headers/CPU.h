@@ -12,6 +12,9 @@ typedef struct CPU
     int quantidadeInteiros;
     ProcessoSimulado *processoEmExecucao;
 } CPU;
+
+
 void iniciarCPU(CPU * cpu);
+void imprimeCPU(CPU cpu);
 
 #endif

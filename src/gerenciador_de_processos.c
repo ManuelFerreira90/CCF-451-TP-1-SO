@@ -215,7 +215,7 @@ int contar_linhas_antes_primeiro_F(const char *filename)
         return -1; // Retorna -1 em caso de erro ao abrir o arquivo
     }
 
-    char line[256];
+    char line[MAX_CMD_LEN];
     int line_count = 0;
 
     while (fgets(line, sizeof(line), file))
