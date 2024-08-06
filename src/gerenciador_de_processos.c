@@ -430,6 +430,9 @@ void atualizarProcessoEmExecucao(GerenciadorProcessos *gerenciador, int cpuIndex
 
     // Atualiza a CPU com o processo em execução
     gerenciador->cpus[cpuIndex].processoEmExecucao = processo;
+    printf("\n________________________________________");
+    printf("\nProcesso em execução: %d\n", processo->ID_Processo);
+    printf("\n________________________________________");
 
     // Atualiza os ponteiros da CPU para apontar para as variáveis do processo
     gerenciador->cpus[cpuIndex].contadorPrograma = processo->PC;

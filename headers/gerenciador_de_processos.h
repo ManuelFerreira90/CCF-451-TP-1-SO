@@ -53,6 +53,10 @@ void comandoR(CPU *cpu, Instrucao instrucao);
 
 void printTableBorder();
 
+void lerArquivo(char *arquivoEntrada);
+void lerTerminal(char* retorno);
+void remove_char(char *str, char garbage);
+
 //---------------------------------------------------------------------------------------
 
 #endif // GERENCIADOR_PROCESSOS_H

@@ -3,12 +3,14 @@
 #include "../headers/gerenciador_de_processos.h"
 
 int main() {
-    int fd[2]; /* Descritores de arquivo para o Pipe */
+    int fd[2], fd_filho[2]; /* Descritores de arquivo para o Pipe */
     pid_t pid; /* Variável para armazenar o PID */
     int file_fd; /* Descritor de arquivo para o init.txt */
     char buffer[BUFFER];
     ssize_t bytes_read;
     char escolha;
+    char stringEntrada[100];
+    char stringSaida[100];
     FILE *entrada = stdin; // Por padrão, lê da entrada padrão
     
 
@@ -26,52 +28,46 @@ int main() {
 
     /* Processo Pai */
     if (pid > 0) {
-        /* No pai, ler comandos e escrever no Pipe */
+        
+         /* No pai, ler comandos e escrever no Pipe */
         close(fd[0]); // Fechar a leitura do Pipe no lado do pai
-        printf("Escolha a entrada (a: entrada padrão, f: arquivo): ");
-        escolha = getchar();
-        getchar(); // Consome o newline após a escolha
+        int entradaUsu;
+        do
+        {
+            sleep(2);
+            printf("Escolha o tipo de entrada (1): terminal, 2: arquivo): ");
 
-        if (escolha == 'f') {
-            // Se a escolha for arquivo, abrir o arquivo init.txt
-            file_fd = open("entry/init.txt", O_RDONLY);
-            if (file_fd < 0) {
-                perror("open");
-                exit(1);
+            scanf("%d", &entradaUsu);
+
+            if(entradaUsu == 1 || entradaUsu == 2){
+                if(entradaUsu == 1){
+                    lerTerminal(stringEntrada);
+                } else if(entradaUsu == 2){
+                    lerArquivo(stringEntrada);
+                }
+                break;
+            } else {
+                printf("Entrada inválida. Tente novamente.\n");
             }
 
-            // Mensagem de depuração
-            printf("Pai: Enviando comandos do arquivo...\n");
 
-            // Ler do arquivo e escrever no Pipe caractere por caractere
-            while ((bytes_read = read(file_fd, buffer, BUFFER)) > 0) {
-                if (write(fd[1], buffer, bytes_read) < 0) {
-                    perror("write");
-                    exit(1);
-                }
-            }
-            close(file_fd);
-        } else {
-            // Caso contrário, ler da entrada padrão
-            printf("Digite os comandos (terminar com M):\n");
-            while ((bytes_read = read(STDIN_FILENO, buffer, BUFFER)) > 0) {
-                if (write(fd[1], buffer, bytes_read) < 0) {
-                    perror("write");
-                    exit(1);
-                }
-                if (buffer[0] == 'M') { // Se encontrar o comando M, parar
-                    break;
-                }
-            }
-        }
 
+
+        } while (entradaUsu != 1 || entradaUsu != 2);
+        printf("String enviada: %s\n", stringEntrada);
+        write(fd[1], stringEntrada, sizeof(stringEntrada) + 2);
         close(fd[1]); // Fechar o lado de escrita do Pipe
         wait(NULL);   // Esperar o filho terminar
         exit(0);
     }
     /* Processo Filho */
     else {
-        char str_recebida[BUFFER];
+        if (pipe(fd_filho) < 0)
+        {
+            perror("pipe");
+            return -1;
+        }
+        char str_recebida[BUFFER + 1]; // +1 para o terminador nulo
         ssize_t bytes_read;
 
         /* Inicializar o Gerenciador de Processos */
@@ -83,6 +79,9 @@ int main() {
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
 
+//coloque uma system calls para aguardar a mensagem do pai
+         read(fd[0], buffer, BUFFER);
+        
         // Mensagem de depuração
         printf("Filho: Processando comandos...\n");
 
@@ -92,6 +91,7 @@ int main() {
             // Processar comandos com o Gerenciador de Processos
             switch (str_recebida[0]) {
                 case 'U':
+                    
                     printf("Fim de uma unidade de tempo.\n");
 
                     // verificando se a processos na CPU
@@ -141,4 +141,68 @@ int main() {
     }
 
     return 0;
+}
+
+
+
+void lerArquivo(char *retorno)
+{
+    FILE *arquivo;
+    char str[2];
+
+    //atribua ao arquivo o Controle.txt
+    arquivo = fopen("./entry/Controle.txt", "r");
+
+    if (arquivo == NULL)
+    {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+    else
+    {
+        while (fscanf(arquivo, "%s", str) != EOF)
+        {
+            strcat(retorno, str);
+            strcat(retorno, " ");
+        }
+
+        fclose(arquivo);
+    }
+}
+
+
+void lerTerminal(char *retorno)
+{
+    char comando;
+    int i = 0;
+
+    printf("Entre com os comandos:\n");
+
+    do
+    {
+        scanf("%c", &comando);
+        if (comando >= 97 && comando <= 120)
+        {
+            comando = comando - 32;
+        }
+        retorno[i] = comando;
+        strcat(retorno, " ");
+        i++;
+    } while (comando != 'M');
+
+    remove_char(retorno, '\n');
+}
+
+
+void remove_char(char *str, char c)
+{
+    char *pr = str, *pw = str;
+
+    while (*pr)
+    {
+        *pw = *pr++;
+        pw += (*pw != c);
+    }
+
+    *pw = '\0';
 }
