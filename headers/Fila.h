@@ -1,7 +1,7 @@
 #ifndef FILADINAMICA_H
 #define FILADINAMICA_H
 
-
+#include "tempo.h"
 typedef struct node {
     int dado;
     struct node *proximo;

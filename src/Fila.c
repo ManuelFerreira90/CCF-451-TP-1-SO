@@ -1,8 +1,5 @@
-#include "FilaDinamica.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "../headers/Fila.h"
 
-// Inicializa a fila dinâmica
 void inicializarFilaDinamica(FilaDinamica *fila) {
     fila->frente = NULL;
     fila->tras = NULL;

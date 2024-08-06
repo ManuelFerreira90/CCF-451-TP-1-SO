@@ -22,5 +22,5 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
 void imprimeProcesso(ProcessoSimulado *processo);
 void imprimeTabelaProcessos(tabelaProcessos *tabela);
 const char* estadoToString(Estados estado);
-
+ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice);
 #endif

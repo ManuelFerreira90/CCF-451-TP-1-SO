@@ -10,6 +10,7 @@ int main() {
     ssize_t bytes_read;
     char escolha;
     FILE *entrada = stdin; // Por padrão, lê da entrada padrão
+    
 
     /* Criando o Pipe */
     if (pipe(fd) < 0) {
@@ -33,7 +34,7 @@ int main() {
 
         if (escolha == 'f') {
             // Se a escolha for arquivo, abrir o arquivo init.txt
-            file_fd = open("entry/input1.txt", O_RDONLY);
+            file_fd = open("entry/init.txt", O_RDONLY);
             if (file_fd < 0) {
                 perror("open");
                 exit(1);
@@ -76,8 +77,8 @@ int main() {
         /* Inicializar o Gerenciador de Processos */
         int comecou = 0;
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt");
-        iniciarCPU(&gerenciador);
+        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt",getpid());
+        comecaExecucao(&gerenciador);
 
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
@@ -93,20 +94,26 @@ int main() {
                 case 'U':
                     printf("Fim de uma unidade de tempo.\n");
                     // Chamar função do Gerenciador de Processos para avançar no tempo
-                    if (comecou == 0) {
-                        comecaExecucao(&gerenciador);
-                        incrementarTempo(&gerenciador.cpu.tempoUsado);
-                        comecou = 1;
-                    } else {
-                        executarProcessoAtual(&gerenciador);
-                        incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    }    
-                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+                    // if (comecou == 0) {
+                    //     comecaExecucao(&gerenciador);
+                    //     incrementarTempo(&gerenciador.cpu.tempoUsado);
+                    //     comecou = 1;
+                    // } else {
+                    //     executarProcessoAtual(&gerenciador);
+                    //     incrementarTempo(&gerenciador.cpu.tempoUsado);
+                    // }    
+                    // imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+                    executandoProcessoCPU(&gerenciador);
                     break;
                 case 'I':
+
                     printf("Imprimindo estado atual do sistema.\n");
                     // Chamar função do Gerenciador de Processos para imprimir o estado
-                    imprimeCPU(gerenciador.cpu);
+                    for (int i = 0; i < gerenciador.quantidadeCPUs; i++)
+                    {
+                        imprimeCPU(gerenciador.cpus[i]);
+                    }
+                    
                     break;
                 case 'M':
                     printf("Imprimindo tempo médio de resposta e finalizando.\n");

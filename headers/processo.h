@@ -2,7 +2,7 @@
 #define PROCESSO_H
 
 #include "./tempo.h"
-
+#include "./Fila.h"
 typedef enum
 {
     Bloqueado = 0,
@@ -20,8 +20,13 @@ typedef struct
     int *memoria;
     int quantidadeInteiros;
     char *conjuntoInstrucoes;
+    Tempo tempoInicio;
+    Tempo tempoCPU;
+    int quantidadeInstrucao;
+
+
 } ProcessoSimulado;
 
-ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes);
+ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int,int);
 
 #endif // PROCESSO_H

@@ -21,7 +21,8 @@ void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
     if (!isTabelaProcessosCheia(tabela)) {
         tabela->listaProcessos[tabela->ultimoProcessoIndex] = processo;
         tabela->ultimoProcessoIndex++;
-    } else {
+        printf("Tabela %d ",tabela->listaProcessos[0]->ID_Processo);
+            } else {
         fprintf(stderr, "Erro: Tabela de processos cheia!\n");
     }
 }
@@ -51,6 +52,19 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
     return lista_indices;
 }
 
+ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice) {
+    if (indice < 0 || indice >= MAX_PROCESSOS) {
+        // Se o índice for inválido, retorna NULL ou trata o erro conforme desejado.
+        return NULL;
+    }
+
+    if (tabela->listaProcessos[indice] == NULL) {
+        // Se o processo no índice não existe, retorna NULL ou trata o erro conforme desejado.
+        return NULL;
+    }
+
+    return tabela->listaProcessos[indice];
+}
 
 
 // Função auxiliar para converter o estado do processo em uma string
