@@ -26,7 +26,7 @@ void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoI
 }
 
 // Move o processo em execução para a fila de bloqueados
-void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int indexCPU)
+void comandoB(GerenciadorProcessos *gerenciador, int indexCPU)
 {
     int processoIndex = gerenciador->EstadosProcessos.filasEmExecucao[indexCPU];
     if (processoIndex != -1)
@@ -38,6 +38,7 @@ void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int indexCPU)
     {
         printf("Erro: nenhum processo em execução para ser bloqueado!\n");
     }
+    iniciarCPU(&gerenciador->cpus[indexCPU]);
 }
 
 // Muda a prioridade de um processo para uma de menor prioridade
@@ -143,6 +144,23 @@ void comandoS(CPU *cpu, int index, int valor)
     cpu->contadorPrograma++;
 }
 
+void comandoF(GerenciadorProcessos *gerenciador, int indexCPU, int valor)
+{
+    ProcessoSimulado *novoProcesso = criarNovoProcessoAPartirdoPai(gerenciador->cpus[indexCPU].processoEmExecucao);
+    inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
+    adicionarProcessoPronto(gerenciador, gerenciador->TabelaProcessos.ultimoProcessoIndex);
+    
+    novoProcesso->PC = gerenciador->cpus[indexCPU].contadorPrograma + 1;
+    gerenciador->cpus[indexCPU].contadorPrograma += valor;
+    novoProcesso->PC = gerenciador->cpus[indexCPU].contadorPrograma;
+}
+
+void comandoR(CPU *cpu, Instrucao instrucao)
+{
+    cpu->processoEmExecucao->conjuntoInstrucoes = instrucao.arquivo;
+    cpu->processoEmExecucao->PC = 0;
+}
+
 void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, int indexCPU)
 {
     switch (instrucao.comando)
@@ -169,26 +187,30 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, in
         break;
     case 'B':
         // Bloqueia o processo
+        comandoB(gerenciador, indexCPU);
         break;
     case 'T':
         // Termina o processo atual
         break;
     case 'F':
         // Cria um novo processo simulado
+        comandoF(gerenciador, indexCPU, instrucao.valor);
         break;
     case 'R':
         // Substitui o programa do processo simulado
-
+        comandoR(&(gerenciador->cpus[indexCPU]), instrucao);
         break;
     default:
         printf("Comando desconhecido: %c\n", instrucao.comando);
         break;
     }
+    gerenciador->cpus[indexCPU].fatiaTempo.valor--;
 }
 
-void iniciarVetorMemoria(CPU * cpu)
+void iniciarVetorMemoria(CPU *cpu)
 {
-    if(cpu->processoEmExecucao->memoria != NULL){
+    if (cpu->processoEmExecucao->memoria != NULL)
+    {
         cpu->memoriaVect = cpu->processoEmExecucao->memoria;
     }
 }
@@ -203,10 +225,11 @@ void iniciarCPU(CPU *cpu)
 
     // iniciarVetorMemoria(gerenciador);
     cpu->memoriaVect = NULL;
+    setTempo(&(cpu->fatiaTempo), QUANTUM);
 }
 
 // Função que retorna o número de linhas antes do primeiro comando 'F'
-int contar_linhas_antes_primeiro_F(const char *filename)
+int contarQuantidadeInstrucoes(const char *filename)
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL)
@@ -230,13 +253,14 @@ int contar_linhas_antes_primeiro_F(const char *filename)
     }
 
     fclose(file);
-    return line_count; // Se não encontrou 'F', retorna o total de linhas
+    return line_count; // Retorna o total de linhas se 'F' não for encontrado
 }
 
 void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai)
 {
     gerenciador->cpus = (CPU *)malloc(sizeof(CPU) * NUM_CPUs);
     gerenciador->quantidadeCPUs = NUM_CPUs;
+
     inicializarTempo(&gerenciador->tempoAtual);
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
 
@@ -250,14 +274,13 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     {
         // iniciarCPU(&gerenciador->cpus[i]);
         gerenciador->EstadosProcessos.filasEmExecucao[i] = -1;
+        iniciarCPU(&gerenciador->cpus[i]);
     }
 
     // gerenciador->EstadosProcessos.processoEmExecucao = -1;
-    inicializarTempo(&gerenciador->tempoAtual);
 
-    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
-    ProcessoSimulado  * processo = inicializaProcesso(arquivoEntrada,contar_linhas_antes_primeiro_F(arquivoEntrada),PID_Pai,0);
-    printf("ID Processo Criado: %d",processo->ID_Processo);
+    ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);
+    printf("ID Processo Criado: %d", processo->ID_Processo);
     inserirTabelaProcessos(processo, &(gerenciador->TabelaProcessos));
     adicionarProcessoPronto(gerenciador, 0);
 }
@@ -271,11 +294,10 @@ void printTableBorder()
     printf("\n");
 }
 
-void imprimeCPU(CPU cpu)
-{
+void imprimeCPU(CPU cpu, int index) {
     printf("\n");
     printTableBorder();
-    printf("| %-36s |\n", "CPU Status");
+    printf("| %-32s %-3d |\n", "CPU Status", index); // Adicionado o índice aqui
     printTableBorder();
     printf("| %-25s | %8d |\n", "Contador de programa", cpu.contadorPrograma);
     printTableBorder();
@@ -284,18 +306,14 @@ void imprimeCPU(CPU cpu)
     printf("| %-36s |\n", "Memoria atual na CPU");
     printTableBorder();
 
-    if (cpu.memoriaVect != NULL)
-    {
+    if (cpu.memoriaVect != NULL) {
         printf("| %-15s | %-18s |\n", "Index", "Valor");
         printTableBorder();
-        for (int i = 0; i < cpu.quantidadeInteiros; i++)
-        {
+        for (int i = 0; i < cpu.quantidadeInteiros; i++) {
             printf("|  %14d | %18d |\n", i, cpu.memoriaVect[i]);
         }
         printTableBorder();
-    }
-    else
-    {
+    } else {
         printf("| %-36s |\n", "NULL");
         printTableBorder();
     }
@@ -382,6 +400,7 @@ Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha)
 
     return instrucao;
 }
+
 int desenfileirarProcessoParaCPU(FilaDinamica *filaProntos)
 {
     // if (!isFilaDinamicaVazia(filaProntos))
@@ -394,15 +413,15 @@ int desenfileirarProcessoParaCPU(FilaDinamica *filaProntos)
 }
 void atualizarProcessoEmExecucao(GerenciadorProcessos *gerenciador, int cpuIndex, int processoId)
 {
-
     gerenciador->cpus[cpuIndex].processoEmExecucao = getProcesso(&gerenciador->TabelaProcessos, processoId);
     printf("CPU INDEX Processo: %d", gerenciador->cpus[cpuIndex].processoEmExecucao->ID_Processo);
+
     gerenciador->EstadosProcessos.filasEmExecucao[cpuIndex] = processoId;
-    gerenciador->TabelaProcessos.listaProcessos[processoId]->EstadosProcesso = Execucao;
+    gerenciador->cpus[cpuIndex].processoEmExecucao->EstadosProcesso = Execucao;
     printf("Processo %d escolhido para a CPU %d\n", processoId, cpuIndex);
+
     iniciarVetorMemoria(&gerenciador->cpus[cpuIndex]);
     gerenciador->cpus[cpuIndex].contadorPrograma = gerenciador->cpus[cpuIndex].processoEmExecucao->PC;
-
 }
 
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
@@ -412,38 +431,36 @@ void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
     {
         if (gerenciador->cpus[i].processoEmExecucao != NULL)
         {
-            instrucao = processarLinhaEspecifica(gerenciador->cpus[i].processoEmExecucao->conjuntoInstrucoes, gerenciador->cpus[i].contadorPrograma+1);
+            instrucao = processarLinhaEspecifica(gerenciador->cpus[i].processoEmExecucao->conjuntoInstrucoes, gerenciador->cpus[i].contadorPrograma + 1);
             processarComando(gerenciador, instrucao, i);
-            printf("%c,%d\n",instrucao.comando,instrucao.valor);
+            printf("%c,%d\n", instrucao.comando, instrucao.valor);
         }
-        
     }
 }
-void comecaExecucao(GerenciadorProcessos *gerenciador)
+
+void colocaProcessoNaCPU(GerenciadorProcessos *gerenciador, int cpuIndex)
 {
     int processoId = -1;
 
-    for (int j = 0; j < NUM_CPUs; j++)
+    // Verifica se o índice da CPU é válido
+    if (cpuIndex < 0 || cpuIndex >= NUM_CPUs)
     {
+        printf("Erro: índice da CPU %d é inválido!\n", cpuIndex);
+        return;
+    }
 
-        // Tentativa de desenfileirar um processo para a CPU j
-        for (int i = 0; i < NUM_PRIORIDADES; i++)
+    // Tentativa de desenfileirar um processo para a CPU especificada
+    for (int i = 0; i < NUM_PRIORIDADES; i++)
+    {
+        processoId = desenfileirarDinamica(&gerenciador->EstadosProcessos.filasProntos[i]);
+        if (processoId != -1)
         {
-
-            // processoId = desenfileirarProcessoParaCPU(&(gerenciador->EstadosProcessos.filasProntos[i]));
-            processoId = desenfileirarDinamica(&gerenciador->EstadosProcessos.filasProntos[i]);
-            printf("\nProcessID: %d\n", processoId);
-            if (processoId != -1)
-            {
-                atualizarProcessoEmExecucao(gerenciador, j, processoId);
-                //ProcessoSimulado *processo = getProcesso(gerenciador->TabelaProcessos.listaProcessos,processoId);
-                printf("\nProcesso Simulado ID: %d\n", gerenciador->TabelaProcessos.listaProcessos[0]->ID_Processo);
-
-                //gerenciador->cpus[j].processoEmExecucao
-                return; // Saímos da função após atribuir o processo a uma CPU
-            }
+            atualizarProcessoEmExecucao(gerenciador, cpuIndex, processoId);
+            printf("Processo %d atribuído à CPU %d\n", processoId, cpuIndex);
+            return; // Saímos da função após atribuir o processo à CPU especificada
         }
     }
+
     printf("Erro: não há processos prontos para execução!\n");
 }
 
@@ -477,15 +494,50 @@ void executarProcessoAtual(GerenciadorProcessos *gerenciador, int indexCPU)
     }
 }
 
-void avaliarTempoProcesso(GerenciadorProcessos *gerenciador, int tempoDeterminado)
-{
+void avaliarTempoProcesso(GerenciadorProcessos *gerenciador) {
+    for (int i = 0; i < gerenciador->quantidadeCPUs; i++) {
+        int processoEmExecucaoID = gerenciador->EstadosProcessos.filasEmExecucao[i];
+        
+        if (processoEmExecucaoID != -1) { // Verifica se há um processo em execução
+            ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[processoEmExecucaoID];
+            
+            if (gerenciador->cpus[i].fatiaTempo.valor == 0) { // Verifica a fatia de tempo do processo
+                printf("Processo %d atingiu a fatia de tempo\n", processoEmExecucaoID);
+                if (processo->prioridade < NUM_PRIORIDADES - 1) { // Aumenta a prioridade se não for a máxima
+                    processo->prioridade++;
+                }
+                
+                // Remove o processo da execução
+                gerenciador->EstadosProcessos.filasEmExecucao[i] = -1;
+                
+                processo->EstadosProcesso = Pronto;
+                processo->PC = gerenciador->cpus[i].contadorPrograma;
+                processo->memoria = gerenciador->cpus[i].memoriaVect;
+                processo->tempoCPU = gerenciador->cpus[i].tempoUsado;
 
-    // int processoIndex = gerenciador->EstadosProcessos.processoEmExecucao;
-    // if (processoIndex != -1) {
-    //     ProcessoSimulado *processoAtual = gerenciador->TabelaProcessos.listaProcessos[processoIndex];
-    //     if ((gerenciador->tempoAtual.valor - processoAtual->tempoInicio.valor) >= tempoDeterminado && processoAtual->EstadosProcesso != TERMINADO) {
-    //         mudarPrioridadeProcesso(gerenciador, processoIndex);
-    //         gerenciador->EstadosProcessos.processoEmExecucao = -1;
-    //     }
-    // }
+                iniciarCPU(&gerenciador->cpus[i]);
+                
+                // Move o processo para a fila de prontos da nova prioridade
+                enfileirarDinamica(&gerenciador->EstadosProcessos.filasProntos[processo->prioridade], processoEmExecucaoID);
+                
+                printf("Processo %d movido para a fila de prontos com prioridade %d\n", processoEmExecucaoID, processo->prioridade);
+
+                // verificar se há um processo candidato para a CPU
+                colocaProcessoNaCPU(gerenciador, i);
+            } 
+        }
+    }
+}
+
+int existeProcessoEmAlgumaCPU(GerenciadorProcessos *gerenciador)
+{
+    for (int cpuIndex = 0; cpuIndex < NUM_CPUs; cpuIndex++)
+    {
+        if (gerenciador->EstadosProcessos.filasEmExecucao[cpuIndex] != -1)
+        {
+            return 1; // Há um processo em execução em pelo menos uma CPU
+        }
+    }
+
+    return 0; // Não há processos em execução em nenhuma CPU
 }

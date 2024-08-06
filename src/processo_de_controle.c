@@ -78,7 +78,7 @@ int main() {
         int comecou = 0;
         GerenciadorProcessos gerenciador;
         iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt",getpid());
-        comecaExecucao(&gerenciador);
+        colocaProcessoNaCPU(&gerenciador, 0);
 
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
@@ -93,17 +93,17 @@ int main() {
             switch (str_recebida[0]) {
                 case 'U':
                     printf("Fim de uma unidade de tempo.\n");
-                    // Chamar função do Gerenciador de Processos para avançar no tempo
-                    // if (comecou == 0) {
-                    //     comecaExecucao(&gerenciador);
-                    //     incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    //     comecou = 1;
-                    // } else {
-                    //     executarProcessoAtual(&gerenciador);
-                    //     incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    // }    
-                    // imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
-                    executandoProcessoCPU(&gerenciador);
+                    
+                    // verificando se a processos na CPU
+                    if (existeProcessoEmAlgumaCPU(&gerenciador) == 1)
+                    {
+                        avaliarTempoProcesso(&gerenciador);
+                        executandoProcessoCPU(&gerenciador);
+                    }
+                    else
+                    {
+                        printf("Não há processos em execução.\n");
+                    }
                     break;
                 case 'I':
 
@@ -111,7 +111,7 @@ int main() {
                     // Chamar função do Gerenciador de Processos para imprimir o estado
                     for (int i = 0; i < gerenciador.quantidadeCPUs; i++)
                     {
-                        imprimeCPU(gerenciador.cpus[i]);
+                        imprimeCPU(gerenciador.cpus[i], i);
                     }
                     
                     break;

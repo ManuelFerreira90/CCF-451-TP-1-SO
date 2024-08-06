@@ -25,23 +25,30 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, int processoIndex);
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
 void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoIndex);
-void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo);
 void terminarProcessoSimulado(GerenciadorProcessos *gerenciador);
 void executarProcessoAtual(GerenciadorProcessos * gerenciador, int indexCPU);
 void processarComando(GerenciadorProcessos * gerenciador, Instrucao instrucao, int indexCPU);
-void comecaExecucao(GerenciadorProcessos *gerenciador);
+
+// escalonamento
+void colocaProcessoNaCPU(GerenciadorProcessos *gerenciador, int indexCPU);
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador);
+void avaliarTempoProcesso(GerenciadorProcessos *gerenciador);
+int existeProcessoEmAlgumaCPU(GerenciadorProcessos *gerenciador);
 
 void imprimirInstrucoes(ProcessoSimulado *processo);
 
 Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha);
 
 void iniciarVetorMemoria(CPU * cpu);
+
+void comandoB(GerenciadorProcessos *gerenciador, int tempo);
 void comandoD(CPU *cpu, int index);
 void comandoN(CPU *cpu, int valor);
 void comandoV(CPU *cpu, int index, int valor);
 void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
+void comandoF(GerenciadorProcessos *gerenciador, int index, int valor);
+void comandoR(CPU *cpu, Instrucao instrucao);
 
 void printTableBorder();
 

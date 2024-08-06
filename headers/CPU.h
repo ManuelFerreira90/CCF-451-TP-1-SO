@@ -15,6 +15,6 @@ typedef struct CPU
 
 
 void iniciarCPU(CPU * cpu);
-void imprimeCPU(CPU cpu);
+void imprimeCPU(CPU cpu, int index);
 
 #endif

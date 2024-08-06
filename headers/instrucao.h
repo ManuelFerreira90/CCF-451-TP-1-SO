@@ -10,6 +10,7 @@
 #define MAX_CMD_LEN 100 
 #define NUM_PRIORIDADES 4
 #define NUM_CPUs 4
+#define QUANTUM 10
 
 
 #include <sys/types.h>

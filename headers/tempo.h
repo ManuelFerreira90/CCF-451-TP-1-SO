@@ -5,8 +5,6 @@
 
 #include "./instrucao.h"
 
-
-
 typedef struct Tempo{
     int valor;
 }Tempo;

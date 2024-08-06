@@ -24,14 +24,13 @@ typedef struct
     Tempo tempoCPU;
     int quantidadeInstrucao;
 
-
 } ProcessoSimulado;
 
 // Declarações de funções e estruturas
 //---------------------------------------------------------------------------------------
 
-ProcessoSimulado* inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int,int);
-
+ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int PID_pai, int id);
+ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai);
 //---------------------------------------------------------------------------------------
 
 #endif // PROCESSO_H
