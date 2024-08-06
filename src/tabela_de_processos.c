@@ -21,8 +21,7 @@ void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
     if (!isTabelaProcessosCheia(tabela)) {
         tabela->listaProcessos[tabela->ultimoProcessoIndex] = processo;
         tabela->ultimoProcessoIndex++;
-        printf("Tabela %d ",tabela->listaProcessos[0]->ID_Processo);
-            } else {
+    } else {
         fprintf(stderr, "Erro: Tabela de processos cheia!\n");
     }
 }
@@ -54,20 +53,12 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
 
 ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice) {
     if (indice < 0 || indice >= MAX_PROCESSOS) {
-        // Se o índice for inválido, retorna NULL ou trata o erro conforme desejado.
+        // Se o índice for inválido, retorna NULL ou trata o erro conforme desejado
         return NULL;
     }
-
-    if (tabela->listaProcessos[indice] == NULL) {
-        // Se o processo no índice não existe, retorna NULL ou trata o erro conforme desejado.
-        return NULL;
-    }
-
     return tabela->listaProcessos[indice];
 }
 
-
-// Função auxiliar para converter o estado do processo em uma string
 const char* estadoToString(Estados estado) {
     switch (estado) {
         case Bloqueado: return "Bloqueado";
@@ -77,30 +68,9 @@ const char* estadoToString(Estados estado) {
     }
 }
 
-// Função para imprimir um único processo
-void imprimeProcesso(ProcessoSimulado *processo) {
-    if (processo != NULL) {
-        printf("| %-11d | %-14d | %-10d | %-11s | %-10d |\n",
-               processo->ID_Processo,
-               processo->ID_Processo_Pai,
-               processo->PC,
-               estadoToString(processo->EstadosProcesso),
-               processo->prioridade);
-    }
-}
-
-// Função para imprimir a tabela de processos
 void imprimeTabelaProcessos(tabelaProcessos *tabela) {
-    printf("+-------------+----------------+------------+-------------+------------+\n");
-    printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
-    printf("+-------------+----------------+------------+-------------+------------+\n");
-
-    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++) {
-        if (tabela->listaProcessos[i] != NULL) {
-            imprimeProcesso(tabela->listaProcessos[i]);
-        }
+    printf("Tabela de Processos:\n");
+    for (int i = 0; i < tabela->ultimoProcessoIndex; i++) {
+        printf("Processo ID: %d, Estado: %s\n", tabela->listaProcessos[i]->ID_Processo, estadoToString(tabela->listaProcessos[i]->EstadosProcesso));
     }
-
-    printf("+-------------+----------------+------------+-------------+------------+\n");
 }
-

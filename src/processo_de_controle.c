@@ -10,7 +10,6 @@ int main() {
     ssize_t bytes_read;
     char escolha;
     FILE *entrada = stdin; // Por padrão, lê da entrada padrão
-    
 
     /* Criando o Pipe */
     if (pipe(fd) < 0) {
@@ -93,37 +92,22 @@ int main() {
             switch (str_recebida[0]) {
                 case 'U':
                     printf("Fim de uma unidade de tempo.\n");
-                    // Chamar função do Gerenciador de Processos para avançar no tempo
-                    // if (comecou == 0) {
-                    //     comecaExecucao(&gerenciador);
-                    //     incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    //     comecou = 1;
-                    // } else {
-                    //     executarProcessoAtual(&gerenciador);
-                    //     incrementarTempo(&gerenciador.cpu.tempoUsado);
-                    // }    
-                    // imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
                     executandoProcessoCPU(&gerenciador);
                     break;
                 case 'I':
-
                     printf("Imprimindo estado atual do sistema.\n");
-                    // Chamar função do Gerenciador de Processos para imprimir o estado
-                    for (int i = 0; i < gerenciador.quantidadeCPUs; i++)
-                    {
+                    for (int i = 0; i < gerenciador.quantidadeCPUs; i++) {
                         imprimeCPU(gerenciador.cpus[i]);
                     }
-                    
                     break;
                 case 'M':
                     printf("Imprimindo tempo médio de resposta e finalizando.\n");
-                    // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
                     break;
                 default:
                     printf("Comando desconhecido: %c\n", str_recebida[0]);
                     break;
             }
-            
+
             if (str_recebida[0] == 'M') {
                 break;
             }
@@ -133,7 +117,6 @@ int main() {
             perror("read");
         }
 
-        
         close(fd[0]); // Fechar o lado de leitura do Pipe
         exit(0);
     }

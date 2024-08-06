@@ -26,7 +26,7 @@ void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
 void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoIndex);
 Instrucao processarLinhaEspecifica(const char *caminhoArquivo, int numeroLinha);
 void bloquearProcessoSimulado(GerenciadorProcessos *gerenciador, int tempo);
-void terminarProcessoSimulado(GerenciadorProcessos *gerenciador);
+void terminarProcessoSimulado(GerenciadorProcessos *gerenciador, int indexCPU);
 void executarProcessoAtual(GerenciadorProcessos * gerenciador, int indexCPU);
 void processarComando(GerenciadorProcessos * gerenciador, Instrucao instrucao, int indexCPU);
 void iniciarVetorMemoria(CPU * cpu);
@@ -40,4 +40,11 @@ void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
 void printTableBorder();
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador);
+
+int escolherProximoProcesso(GerenciadorProcessos *gerenciador);
+void trocarContexto(GerenciadorProcessos *gerenciador, int indexCPU, int proximoProcessoIndex);
+void escalonar(GerenciadorProcessos *gerenciador, int indexCPU);
+
+
+
 #endif // GERENCIADOR_PROCESSOS_H
