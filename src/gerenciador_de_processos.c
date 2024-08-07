@@ -131,10 +131,9 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
         gerenciador->processosTerminados += 1;
         printf("TEMPO: %d\n", processo->tempoCPU.valor);
         iniciarCPU(&gerenciador->cpus[indexCPU]);
-        imprimeTabelaProcessos(&(gerenciador->TabelaProcessos));
-        // free(processo->memoria);
-        // free(processo->conjuntoInstrucoes);
-        // free(processo);
+        free(processo->memoria);
+        free(processo->conjuntoInstrucoes);
+        free(processo);
     }
 }
 
