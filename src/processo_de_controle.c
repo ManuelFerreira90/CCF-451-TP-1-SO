@@ -3,6 +3,9 @@
 #include "../headers/gerenciador_de_processos.h"
 #include "../headers/processoControle.h"
 
+//TODO: @Tarik 1. Implementar função para imprimir cada processo com usa memória e tempo de CPU
+//TODO: @Tarik 2. Implementar função para as filas de prioridades ou fila de round robin, confome a escolha inicial do escalonamento
+
 int processoControle()
 {
     int fd[2], fd_filho[2]; /* Descritores de arquivo para o Pipe */

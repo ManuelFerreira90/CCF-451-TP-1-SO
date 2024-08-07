@@ -95,7 +95,18 @@ void comandoF(GerenciadorProcessos *gerenciador, int indexCPU, int valor)
 
     ProcessoSimulado *novoProcesso = criarNovoProcessoAPartirdoPai(gerenciador->cpus[indexCPU].processoEmExecucao, gerenciador->TabelaProcessos.ultimoProcessoIndex);
     inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
-    adicionarProcessoProntoFilaDePrioridade(gerenciador, gerenciador->TabelaProcessos.ultimoProcessoIndex - 1);
+    
+    printf("Algorigmo de escalonamento: %d\n", gerenciador->algoritmoEscalonamento);
+    if(gerenciador->algoritmoEscalonamento == 0)
+    {
+        adicionarProcessoProntoFilaDePrioridade(gerenciador, novoProcesso->ID_Processo);
+    }
+    else if(gerenciador->algoritmoEscalonamento == 1)
+    {
+        printf("Enfileirando processo %d na fila de prontos\n", novoProcesso->ID_Processo);
+        enfileirarDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto), novoProcesso->ID_Processo);
+        imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto));
+    }
 
     gerenciador->cpus[indexCPU].contadorPrograma += (valor + 1);
 }
@@ -113,12 +124,14 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoIndex);
     if (processo != NULL)
     {
-        retirarTabelaProcessos(processoIndex, &(gerenciador->TabelaProcessos));
+        printf("Processo %d terminado\n", processo->ID_Processo);
+        retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
         gerenciador->processosEmExecucao[indexCPU] = -1;
         incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
         gerenciador->processosTerminados += 1;
-        printf("TEMPO: %d", processo->tempoCPU.valor);
+        printf("TEMPO: %d\n", processo->tempoCPU.valor);
         iniciarCPU(&gerenciador->cpus[indexCPU]);
+        imprimeTabelaProcessos(&(gerenciador->TabelaProcessos));
         // free(processo->memoria);
         // free(processo->conjuntoInstrucoes);
         // free(processo);
@@ -230,6 +243,7 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     inicializarTempo(&gerenciador->tempoMedio);
 
     gerenciador->processosTerminados = 0;
+    gerenciador->algoritmoEscalonamento = escalonador;
 
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);
