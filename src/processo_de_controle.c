@@ -79,6 +79,7 @@ int processoControle()
                 else if (entradaUsu == 2)
                 {
                     lerArquivo(stringEntrada);
+
                 }
                 break;
             }
@@ -206,7 +207,7 @@ int processoControle()
 void lerArquivo(char *retorno)
 {
     FILE *arquivo;
-    char str[2];
+    char str[MAX_CMD_LEN];
 
     // atribua ao arquivo o Controle.txt
     arquivo = fopen("./entry/Controle.txt", "r");
@@ -225,6 +226,7 @@ void lerArquivo(char *retorno)
         }
 
         fclose(arquivo);
+       
     }
 }
 

@@ -119,9 +119,9 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
         gerenciador->processosTerminados += 1;
         printf("TEMPO: %d", processo->tempoCPU.valor);
         iniciarCPU(&gerenciador->cpus[indexCPU]);
-        // free(processo->memoria);
-        // free(processo->conjuntoInstrucoes);
-        // free(processo);
+        free(processo->memoria);
+        free(processo->conjuntoInstrucoes);
+        free(processo);
     }
 }
 
