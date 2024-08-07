@@ -135,12 +135,12 @@ int main()
 
                 if (tipo_escalonamento == 0)
                 {
-                    printf("\nEscalonador de Fila de Prioridades\n");
+                    // printf("\nEscalonador de Fila de Prioridades\n");
                     escalonadorFilaDePrioridades(&gerenciador);
                 }
                 else if (tipo_escalonamento == 1)
                 {
-                    printf("\nEscalonador Round Robin\n");
+                    // printf("\nEscalonador Round Robin\n");
                     escalonadorRoundRobin(&gerenciador);
                 }
                 incrementarTempoCPU(&gerenciador);

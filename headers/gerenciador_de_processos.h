@@ -63,12 +63,12 @@ int trocaDeContexto(GerenciadorProcessos *gerenciador, int i);
 int existeProcessoEmAlgumaCPU(GerenciadorProcessos *gerenciador);
 void atualizaDadosProcesso(CPU *cpu);
 void imprimirInstrucoes(ProcessoSimulado *processo);
-void avaliarCPUVazia(GerenciadorProcessos *gerenciador);
 void iniciarRoundRobin(GerenciadorProcessos *gerenciador);
 void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador);
 
 Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha);
 void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador);
+void printInstrucaoSimplificada(Instrucao instrucao, int cpuIndex, int processoId);
 
 
 void iniciarVetorMemoria(CPU * cpu);

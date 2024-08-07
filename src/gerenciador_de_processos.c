@@ -117,7 +117,7 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
         gerenciador->processosEmExecucao[indexCPU] = -1;
         incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
         gerenciador->processosTerminados += 1;
-        printf("TEMPO: %d",processo->tempoCPU.valor);
+        printf("TEMPO: %d", processo->tempoCPU.valor);
         iniciarCPU(&gerenciador->cpus[indexCPU]);
         free(processo->memoria);
         free(processo->conjuntoInstrucoes);
@@ -234,35 +234,38 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);
     inserirTabelaProcessos(processo, &(gerenciador->TabelaProcessos));
-    
+
     gerenciador->cpus = (CPU *)malloc(sizeof(CPU) * numsCPUs);
-    if (gerenciador->cpus == NULL) {
+    if (gerenciador->cpus == NULL)
+    {
         perror("Falha na alocação de memória para CPUs");
         exit(EXIT_FAILURE);
     }
     gerenciador->quantidadeCPUs = numsCPUs;
 
     // Inicializa a estrutura de escalonamento
-    if (escalonador == 0) {
+    if (escalonador == 0)
+    {
         iniciarFilaDePrioridades(gerenciador);
-    } else if (escalonador == 1) {
+    }
+    else if (escalonador == 1)
+    {
         iniciarRoundRobin(gerenciador);
     }
 
     gerenciador->processosEmExecucao = (int *)malloc(sizeof(int) * gerenciador->quantidadeCPUs);
-    if (gerenciador->processosEmExecucao == NULL) {
+    if (gerenciador->processosEmExecucao == NULL)
+    {
         perror("Falha na alocação de memória para processos em execução");
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < gerenciador->quantidadeCPUs; i++) {
+    for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
+    {
         gerenciador->processosEmExecucao[i] = -1;
         iniciarCPU(&gerenciador->cpus[i]);
     }
-
 }
-
-
 
 void iniciarRoundRobin(GerenciadorProcessos *gerenciador)
 {
@@ -292,11 +295,12 @@ void printTableBorder()
     }
     printf("\n");
 }
-void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador){
+void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador)
+{
     gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
     printf("\n");
     printTableBorder();
-    printf("Processos Terminados: %d\n",gerenciador.processosTerminados);
+    printf("Processos Terminados: %d\n", gerenciador.processosTerminados);
 
     printf("Tempo medio de Execução dos processos:");
     printf("%d", gerenciador.tempoMedio.valor);
@@ -348,11 +352,11 @@ void printInstrucao(Instrucao instrucao)
     {
     case 'N':
         printf("| Valor    | %-26d |\n", instrucao.valor);
-        printf("| Ação     | %-26s |\n", "Criar novo processo");
+        printf("| Ação     | %-26s |\n", "Quantidade de inteiros");
         break;
     case 'D':
-        printf("| Valor    | %-26d |\n", instrucao.valor);
-        printf("| Ação     | %-26s |\n", "Destruir processo");
+        printf("| Índice    | %-26d |\n", instrucao.valor);
+        printf("| Ação     | %-26s |\n", "Inicializar variável");
         break;
     case 'F':
         printf("| Valor    | %-26d |\n", instrucao.valor);
@@ -371,7 +375,7 @@ void printInstrucao(Instrucao instrucao)
     case 'V':
         printf("| Índice   | %-26d |\n", instrucao.index);
         printf("| Valor    | %-26d |\n", instrucao.valor);
-        printf("| Ação     | %-26s |\n", "Visualizar valor no índice");
+        printf("| Ação     | %-26s |\n", "Variável recebe valor");
         break;
     case 'R':
         printf("| Arquivo  | %-26s |\n", instrucao.arquivo);
@@ -470,10 +474,10 @@ Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha)
 
     fclose(file);
 
-    if (instrucao.sucesso)
-    {
-        printInstrucao(instrucao);
-    }
+    // if (instrucao.sucesso)
+    // {
+    //     printInstrucao(instrucao);
+    // }
 
     return instrucao;
 }
@@ -507,6 +511,34 @@ void printCPUInfo(int cpuIndex, ProcessoSimulado *processo, int contadorPrograma
     printf("========================================\n\n\n");
 }
 
+void printInstrucaoSimplificada(Instrucao instrucao, int cpuIndex, int processoId)
+{
+    char instrucaoStr[MAX_CMD_LEN + 10];
+    
+    switch (instrucao.comando)
+    {
+    case 'N':
+    case 'D':
+    case 'F':
+    case 'T':
+    case 'B':
+        snprintf(instrucaoStr, sizeof(instrucaoStr), "%c %d", instrucao.comando, instrucao.valor);
+        break;
+    case 'A':
+    case 'S':
+    case 'V':
+        snprintf(instrucaoStr, sizeof(instrucaoStr), "%c %d %d", instrucao.comando, instrucao.index, instrucao.valor);
+        break;
+    case 'R':
+        snprintf(instrucaoStr, sizeof(instrucaoStr), "%c %s", instrucao.comando, instrucao.arquivo);
+        break;
+    default:
+        snprintf(instrucaoStr, sizeof(instrucaoStr), "Comando desconhecido");
+        break;
+    }
+    printf("CPU %d | executando processo %d | instrução (%s)\n", cpuIndex, processoId, instrucaoStr);
+}
+
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
 {
     Instrucao instrucao;
@@ -518,7 +550,8 @@ void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
 
             if (instrucao.sucesso)
             {
-                printCPUInfo(i, gerenciador->cpus[i].processoEmExecucao, gerenciador->cpus[i].contadorPrograma + 1);
+                // printCPUInfo(i, gerenciador->cpus[i].processoEmExecucao, gerenciador->cpus[i].contadorPrograma + 1);
+                printInstrucaoSimplificada(instrucao, i, gerenciador->cpus[i].processoEmExecucao->ID_Processo);
                 processarComando(gerenciador, instrucao, i);
             }
         }
@@ -601,21 +634,12 @@ void atualizaDadosProcesso(CPU *cpu)
     }
 }
 
-void incrementarTempoCPU(GerenciadorProcessos * gerenciador){
-    for(int x =0; x < gerenciador->quantidadeCPUs; x++){
+void incrementarTempoCPU(GerenciadorProcessos *gerenciador)
+{
+    for (int x = 0; x < gerenciador->quantidadeCPUs; x++)
+    {
         gerenciador->cpus[x].tempoUsado.valor += 1;
     }
-}
-
-void avaliarCPUVazia(GerenciadorProcessos *gerenciador)
-{
-    // for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
-    // {
-    //     if (gerenciador->processosEmExecucao[i] == -1)
-    //     {
-    //         colocaProcessoNaCPU(gerenciador, i);
-    //     }
-    // }
 }
 
 void escalonadorFilaDePrioridades(GerenciadorProcessos *gerenciador)
