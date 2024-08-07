@@ -7,38 +7,63 @@
 typedef struct {
     FilaDinamica filasProntos[NUM_PRIORIDADES];
     FilaDinamica filasBloqueados[NUM_PRIORIDADES];
-    int *filasEmExecucao;
-    //int processoEmExecucao;
-} EstadosProcessos;
+} EstruturaFilaPrioridades;
+
+typedef struct {
+    FilaDinamica filaPronto;
+    FilaDinamica filaBloqueado;
+} EstruturaRoundRobin;
+
+typedef union {
+    EstruturaFilaPrioridades filaPrioridades;
+    EstruturaRoundRobin roundRobin;
+} EstruturaEscalonamento;
+
+
+// typedef struct {
+//     FilaDinamica filasProntos[NUM_PRIORIDADES];
+//     FilaDinamica filasBloqueados[NUM_PRIORIDADES];
+//     int *filasEmExecucao;
+//     int processoEmExecucao;
+// } EstadosProcessos;
 
 typedef struct {
     tabelaProcessos TabelaProcessos;
-    EstadosProcessos EstadosProcessos;
+    EstruturaEscalonamento EstruturaEscalonamento;
     Tempo tempoAtual;
-    CPU * cpus;
+    CPU *cpus;
     int quantidadeCPUs;
+    int algoritmoEscalonamento;  // 0 para fila de prioridades, 1 para round robin
+    int *processosEmExecucao;
 } GerenciadorProcessos;
+
+// typedef struct {
+//     tabelaProcessos TabelaProcessos;
+//     EstadosProcessos EstadosProcessos;
+//     Tempo tempoAtual;
+//     CPU * cpus;
+//     int quantidadeCPUs;
+//     int *processosEmExecucao;
+// } GerenciadorProcessos;
 
 // Declarações de funções e estruturas
 //---------------------------------------------------------------------------------------
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs);
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs, int escalonador);
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, int processoIndex);
-void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
 void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoIndex);
-void terminarProcessoSimulado(GerenciadorProcessos *gerenciador);
-void executarProcessoAtual(GerenciadorProcessos * gerenciador, int indexCPU);
 void processarComando(GerenciadorProcessos * gerenciador, Instrucao instrucao, int indexCPU);
 
 // escalonamento
-void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador);
 void escalonadorFilaDePrioridades(GerenciadorProcessos *gerenciador);
-void colocaProcessoNaCPU(GerenciadorProcessos *gerenciador, int indexCPU);
+void colocaProcessoNaCPUFilaDePrioridades(GerenciadorProcessos *gerenciador, int cpuIndex);
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador);
-void avaliarTempoProcesso(GerenciadorProcessos *gerenciador);
+int trocaDeContexto(GerenciadorProcessos *gerenciador, int i);
 int existeProcessoEmAlgumaCPU(GerenciadorProcessos *gerenciador);
 void atualizaDadosProcesso(CPU *cpu);
 void imprimirInstrucoes(ProcessoSimulado *processo);
 void avaliarCPUVazia(GerenciadorProcessos *gerenciador);
+void iniciarRoundRobin(EstruturaRoundRobin *roundRobin);
+void iniciarFilaDePrioridades(EstruturaFilaPrioridades *filaPrioridades);
 
 Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha);
 
@@ -62,6 +87,11 @@ void remove_char(char *str, char garbage);
 void printInstrucao(Instrucao instrucao);
 void printCPUInfo(int cpuIndex, ProcessoSimulado *processo, int contadorPrograma);
 
+
+void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador);
+void escalonadorRoundRobin(GerenciadorProcessos *gerenciador);
+void trocaDeContextoRoundRobin(GerenciadorProcessos *gerenciador);
+void colocaProcessoNaCPURoundRobin(GerenciadorProcessos *gerenciador, int cpuIndex);
 
 //---------------------------------------------------------------------------------------
 
