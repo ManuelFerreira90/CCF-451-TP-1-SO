@@ -35,6 +35,8 @@ typedef struct {
     int quantidadeCPUs;
     int algoritmoEscalonamento;  // 0 para fila de prioridades, 1 para round robin
     int *processosEmExecucao;
+    Tempo tempoMedio;
+    int processosTerminados;
 } GerenciadorProcessos;
 
 // typedef struct {
@@ -66,6 +68,8 @@ void iniciarRoundRobin(GerenciadorProcessos *gerenciador);
 void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador);
 
 Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha);
+void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador);
+
 
 void iniciarVetorMemoria(CPU * cpu);
 
@@ -86,7 +90,7 @@ void lerTerminal(char* retorno);
 void remove_char(char *str, char garbage);
 void printInstrucao(Instrucao instrucao);
 void printCPUInfo(int cpuIndex, ProcessoSimulado *processo, int contadorPrograma);
-
+void incrementarTempoCPU(GerenciadorProcessos * gerenciador);
 
 void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador);
 void escalonadorRoundRobin(GerenciadorProcessos *gerenciador);

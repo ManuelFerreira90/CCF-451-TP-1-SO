@@ -9,6 +9,6 @@ void setTempo(Tempo *tempo,int valor){
     tempo->valor = valor;
 }
 
-void incrementarTempo(Tempo *tempo){
-    tempo->valor = tempo->valor + 1;
+void incrementarTempo(Tempo *tempo, Tempo * adicional){
+    tempo->valor = tempo->valor + adicional->valor;
 }

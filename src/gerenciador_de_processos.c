@@ -115,6 +115,9 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     {
         retirarTabelaProcessos(processoIndex, &(gerenciador->TabelaProcessos));
         gerenciador->processosEmExecucao[indexCPU] = -1;
+        incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
+        gerenciador->processosTerminados += 1;
+        printf("TEMPO: %d",processo->tempoCPU.valor);
         iniciarCPU(&gerenciador->cpus[indexCPU]);
         free(processo->memoria);
         free(processo->conjuntoInstrucoes);
@@ -222,11 +225,16 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
 {
     printf("Iniciando gerenciador de processos...\n");
     printf("Iniciado com %d CPUs\n", numsCPUs);
+
     inicializarTempo(&gerenciador->tempoAtual);
+    inicializarTempo(&gerenciador->tempoMedio);
+
+    gerenciador->processosTerminados = 0;
+
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);
     inserirTabelaProcessos(processo, &(gerenciador->TabelaProcessos));
-
+    
     gerenciador->cpus = (CPU *)malloc(sizeof(CPU) * numsCPUs);
     if (gerenciador->cpus == NULL) {
         perror("Falha na alocação de memória para CPUs");
@@ -284,7 +292,19 @@ void printTableBorder()
     }
     printf("\n");
 }
+void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador){
+    gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
+    printf("\n");
+    printTableBorder();
+    printf("Processos Terminados: %d\n",gerenciador.processosTerminados);
 
+    printf("Tempo medio de Execução dos processos:");
+    printf("%d", gerenciador.tempoMedio.valor);
+    printf("\n");
+
+    printTableBorder();
+    printf("\n");
+}
 void imprimeCPU(CPU cpu, int index)
 {
     printf("\n");
@@ -578,6 +598,12 @@ void atualizaDadosProcesso(CPU *cpu)
     {
         cpu->processoEmExecucao->PC = cpu->contadorPrograma;
         cpu->processoEmExecucao->tempoCPU.valor += cpu->tempoUsado.valor;
+    }
+}
+
+void incrementarTempoCPU(GerenciadorProcessos * gerenciador){
+    for(int x =0; x < gerenciador->quantidadeCPUs; x++){
+        gerenciador->cpus[x].tempoUsado.valor += 1;
     }
 }
 

@@ -91,6 +91,7 @@ int main()
         write(fd[1], stringEntrada, sizeof(stringEntrada));
         close(fd[1]); // Fechar o lado de escrita do Pipe
         wait(NULL);   // Esperar o filho terminar
+        
         exit(0);
     }
 
@@ -142,6 +143,7 @@ int main()
                     printf("\nEscalonador Round Robin\n");
                     escalonadorRoundRobin(&gerenciador);
                 }
+                incrementarTempoCPU(&gerenciador);
 
                 printf("\n Fim de uma unidade de tempo.\n");
                 break;
@@ -158,7 +160,10 @@ int main()
             case 'M':
                 printf("\nImprimindo tempo médio de resposta e finalizando.\n");
                 // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
+                imprimirTempoMedioProcessos(gerenciador);
+
                 imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+
                 break;
             case ' ':
                 break;
@@ -177,7 +182,6 @@ int main()
         {
             perror("read");
         }
-
         close(fd[0]); // Fechar o lado de leitura do Pipe
         exit(0);
     }
