@@ -85,7 +85,6 @@ void terminarProcessoSimulado(GerenciadorProcessos *gerenciador)
     // } else {
     //     printf("Erro: nenhum processo em execução para ser terminado!\n");
     // }
-
 }
 
 // Cria novos processos simulados
@@ -180,7 +179,6 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
         free(processo->conjuntoInstrucoes);
         free(processo);
     }
-    
 }
 
 void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, int indexCPU)
@@ -279,38 +277,42 @@ int contarQuantidadeInstrucoes(const char *filename)
     return line_count; // Retorna o total de linhas se 'F' não for encontrado
 }
 
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs)
-{
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs) {
     gerenciador->cpus = (CPU *)malloc(sizeof(CPU) * numsCPUs);
     gerenciador->quantidadeCPUs = numsCPUs;
 
-    inicializarTempo(&gerenciador->tempoAtual);
-    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
-
+    gerenciador->EstadosProcessos.filasEmExecucao = (int *)malloc(sizeof(int) * gerenciador->quantidadeCPUs);
     for (int i = 0; i < NUM_PRIORIDADES; i++)
     {
         inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasProntos[i]));
         inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasBloqueados[i]));
     }
-
     for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
     {
         gerenciador->EstadosProcessos.filasEmExecucao[i] = -1;
         iniciarCPU(&gerenciador->cpus[i]);
     }
 
-
+    inicializarTempo(&gerenciador->tempoAtual);
+    inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);
     inserirTabelaProcessos(processo, &(gerenciador->TabelaProcessos));
     adicionarProcessoPronto(gerenciador, 0);
 }
 
+
 void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador)
 {
+    gerenciador->EstadosProcessos.filasEmExecucao = (int *)malloc(sizeof(int) * gerenciador->quantidadeCPUs);
     for (int i = 0; i < NUM_PRIORIDADES; i++)
     {
         inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasProntos[i]));
         inicializarFilaDinamica(&(gerenciador->EstadosProcessos.filasBloqueados[i]));
+    }
+    for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
+    {
+        gerenciador->EstadosProcessos.filasEmExecucao[i] = -1;
+        iniciarCPU(&gerenciador->cpus[i]);
     }
 }
 
@@ -407,7 +409,6 @@ void printInstrucao(Instrucao instrucao)
     }
     printf("========================================\n");
 }
-
 
 // ler comandos de um arquivo
 Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha)

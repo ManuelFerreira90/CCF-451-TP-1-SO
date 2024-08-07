@@ -7,7 +7,7 @@
 typedef struct {
     FilaDinamica filasProntos[NUM_PRIORIDADES];
     FilaDinamica filasBloqueados[NUM_PRIORIDADES];
-    int filasEmExecucao[NUM_CPUs];
+    int *filasEmExecucao;
     //int processoEmExecucao;
 } EstadosProcessos;
 
