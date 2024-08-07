@@ -220,6 +220,8 @@ int contarQuantidadeInstrucoes(const char *filename)
 
 void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs, int escalonador)
 {
+    printf("Iniciando gerenciador de processos...\n");
+    printf("Iniciado com %d CPUs\n", numsCPUs);
     inicializarTempo(&gerenciador->tempoAtual);
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
     ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);

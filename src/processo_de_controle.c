@@ -31,15 +31,28 @@ int main()
     /* Processo Pai */
     if (pid > 0)
     {
-
         /* No pai, ler comandos e escrever no Pipe */
         close(fd[0]); // Fechar a leitura do Pipe no lado do pai
+
+        // Leitura do número de CPUs desejadas
+        int numero_CPUS;
+        printf("Digite o número de CPUs desejadas: ");
+        scanf("%d", &numero_CPUS);
+
+        // Leitura do tipo de escalonamento
+        int tipo_escalonamento;
+        printf("Escolha o tipo de escalonamento (0: Fila de Prioridades, 1: Round Robin): ");
+        scanf("%d", &tipo_escalonamento);
+
+        // Enviar o número de CPUs e o tipo de escalonamento para o processo filho
+        write(fd[1], &numero_CPUS, sizeof(int));
+        write(fd[1], &tipo_escalonamento, sizeof(int));
+
         int entradaUsu;
         do
         {
             sleep(2);
-            printf("Escolha o tipo de entrada (1): terminal, 2: arquivo): ");
-
+            printf("Escolha o tipo de entrada (1: terminal, 2: arquivo): ");
             scanf("%d", &entradaUsu);
 
             if (entradaUsu == 1 || entradaUsu == 2)
@@ -66,6 +79,7 @@ int main()
         wait(NULL);   // Esperar o filho terminar
         exit(0);
     }
+
     /* Processo Filho */
     else
     {
@@ -79,18 +93,20 @@ int main()
 
         /* Inicializar o Gerenciador de Processos */
         int comecou = 0;
-        int escalonador = 1;
+        int numero_CPUS, tipo_escalonamento;
+
+        // Ler o número de CPUs e o tipo de escalonamento do pipe
+        read(fd[0], &numero_CPUS, sizeof(int));
+        read(fd[0], &tipo_escalonamento, sizeof(int));
+
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador, "./entry/input1.txt", getpid(), 2, escalonador);
-        sleep(1);
+        iniciarGerenciadorProcessos(&gerenciador, "./entry/input1.txt", getpid(), numero_CPUS, tipo_escalonamento);
 
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
 
-        // coloque uma system calls para aguardar a mensagem do pai
-        read(fd[0], buffer, BUFFER);
-
         // Mensagem de depuração
+        wait(NULL);
         printf("Filho: Processando comandos...\n");
 
         while ((bytes_read = read(fd[0], str_recebida, BUFFER)) > 0)
@@ -102,13 +118,14 @@ int main()
             {
             case 'U':
 
-                if (escalonador == 0)
+                if (tipo_escalonamento == 0)
                 {
                     printf("\nEscalonador de Fila de Prioridades\n");
                     escalonadorFilaDePrioridades(&gerenciador);
                 }
-                else
+                else if (tipo_escalonamento == 1)
                 {
+                    printf("\nEscalonador Round Robin\n");
                     escalonadorRoundRobin(&gerenciador);
                 }
 
@@ -186,7 +203,7 @@ void lerTerminal(char *retorno)
 
     do
     {
-        scanf("%c", &comando);
+        scanf(" %c", &comando);
         if (comando >= 97 && comando <= 120)
         {
             comando = comando - 32;
