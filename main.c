@@ -1,7 +1,7 @@
-#include "./src/processo_de_controle.c"
+#include "./headers/processoControle.h"
 
 int main()
 {
-    controlarProcessos();
+    processoControle();
     return 0;
 }

@@ -1,8 +1,9 @@
 #define BUFFER 1 // Lendo um caractere por vez
 
 #include "../headers/gerenciador_de_processos.h"
+#include "../headers/processoControle.h"
 
-int main()
+int processoControle()
 {
     int fd[2], fd_filho[2]; /* Descritores de arquivo para o Pipe */
     pid_t pid;              /* Variável para armazenar o PID */
@@ -91,7 +92,7 @@ int main()
         write(fd[1], stringEntrada, sizeof(stringEntrada));
         close(fd[1]); // Fechar o lado de escrita do Pipe
         wait(NULL);   // Esperar o filho terminar
-        
+
         exit(0);
     }
 
@@ -132,7 +133,6 @@ int main()
             switch (str_recebida[0])
             {
             case 'U':
-
                 if (tipo_escalonamento == 0)
                 {
                     // printf("\nEscalonador de Fila de Prioridades\n");
@@ -148,7 +148,6 @@ int main()
                 printf("\n Fim de uma unidade de tempo.\n");
                 break;
             case 'I':
-
                 printf("\nImprimindo estado atual do sistema.\n");
                 // Chamar função do Gerenciador de Processos para imprimir o estado
                 for (int i = 0; i < gerenciador.quantidadeCPUs; i++)
@@ -158,13 +157,30 @@ int main()
                 printf("Finalizando impressão do estado atual do sistema.\n");
                 break;
             case 'M':
+            {
                 printf("\nImprimindo tempo médio de resposta e finalizando.\n");
-                // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
-                imprimirTempoMedioProcessos(gerenciador);
 
-                imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+                pid_t print_pid = fork();
+                if (print_pid == 0)
+                {
+                    // Processo filho para impressão
+                    imprimirTempoMedioProcessos(gerenciador);
+                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
 
+                    printf("Finalizando impressão do tempo médio de resposta.\n");
+                    exit(0); // Finaliza o processo de impressão
+                }
+                else if (print_pid > 0)
+                {
+                    // Processo pai espera o filho terminar
+                    wait(NULL);
+                }
+                else
+                {
+                    perror("fork");
+                }
                 break;
+            }
             case ' ':
                 break;
             default:
