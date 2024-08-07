@@ -79,19 +79,10 @@ int main()
 
         /* Inicializar o Gerenciador de Processos */
         int comecou = 0;
-        int escalonador = 0;
+        int escalonador = 1;
         GerenciadorProcessos gerenciador;
         iniciarGerenciadorProcessos(&gerenciador, "./entry/input1.txt", getpid(), 2, escalonador);
         sleep(1);
-
-        if (escalonador == 0)
-        {
-            iniciarFilaDePrioridades(&gerenciador.EstruturaEscalonamento.filaPrioridades);
-        }
-        else
-        {
-            iniciarRoundRobin(&gerenciador.EstruturaEscalonamento.roundRobin);
-        }
 
         /* No filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar a escrita do Pipe no lado do filho
@@ -111,17 +102,14 @@ int main()
             {
             case 'U':
 
-                // verificando se a processos na CPU
-                if (existeProcessoEmAlgumaCPU(&gerenciador) == 1)
+                if (escalonador == 0)
                 {
-                    if (escalonador == 0)
-                    {
-                        iniciarFilaDePrioridades(&gerenciador.EstruturaEscalonamento.filaPrioridades);
-                    }
-                    else
-                    {
-                        iniciarRoundRobin(&gerenciador.EstruturaEscalonamento.roundRobin);
-                    }
+                    printf("\nEscalonador de Fila de Prioridades\n");
+                    escalonadorFilaDePrioridades(&gerenciador);
+                }
+                else
+                {
+                    escalonadorRoundRobin(&gerenciador);
                 }
 
                 printf("\n Fim de uma unidade de tempo.\n");

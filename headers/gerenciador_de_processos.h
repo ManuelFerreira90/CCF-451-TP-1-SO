@@ -49,8 +49,8 @@ typedef struct {
 // Declarações de funções e estruturas
 //---------------------------------------------------------------------------------------
 void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs, int escalonador);
-void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, int processoIndex);
-void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoIndex);
+void adicionarProcessoProntoFilaDePrioridade(GerenciadorProcessos *gerenciador, int processoIndex);
+void adicionarProcessoBloqueadoFilaDePrioridade(GerenciadorProcessos *gerenciador, int processoIndex);
 void processarComando(GerenciadorProcessos * gerenciador, Instrucao instrucao, int indexCPU);
 
 // escalonamento
@@ -62,8 +62,8 @@ int existeProcessoEmAlgumaCPU(GerenciadorProcessos *gerenciador);
 void atualizaDadosProcesso(CPU *cpu);
 void imprimirInstrucoes(ProcessoSimulado *processo);
 void avaliarCPUVazia(GerenciadorProcessos *gerenciador);
-void iniciarRoundRobin(EstruturaRoundRobin *roundRobin);
-void iniciarFilaDePrioridades(EstruturaFilaPrioridades *filaPrioridades);
+void iniciarRoundRobin(GerenciadorProcessos *gerenciador);
+void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador);
 
 Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha);
 
