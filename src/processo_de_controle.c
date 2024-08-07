@@ -154,7 +154,6 @@ int processoControle()
                 {
                     imprimeCPU(gerenciador.cpus[i], i);
                 }
-                printf("Finalizando impressão do estado atual do sistema.\n");
                 break;
             case 'M':
             {
@@ -167,7 +166,6 @@ int processoControle()
                     imprimirTempoMedioProcessos(gerenciador);
                     imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
 
-                    printf("Finalizando impressão do tempo médio de resposta.\n");
                     exit(0); // Finaliza o processo de impressão
                 }
                 else if (print_pid > 0)
