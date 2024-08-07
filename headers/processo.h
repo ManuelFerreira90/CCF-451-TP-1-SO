@@ -30,7 +30,7 @@ typedef struct
 //---------------------------------------------------------------------------------------
 
 ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int PID_pai, int id);
-ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai);
+ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai, int ID_processo);
 //---------------------------------------------------------------------------------------
 
 #endif // PROCESSO_H

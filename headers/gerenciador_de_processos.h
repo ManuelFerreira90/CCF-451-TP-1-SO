@@ -21,7 +21,7 @@ typedef struct {
 
 // Declarações de funções e estruturas
 //---------------------------------------------------------------------------------------
-void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID);
+void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquivoEntrada, int PID_Pai, int numsCPUs);
 void adicionarProcessoPronto(GerenciadorProcessos *gerenciador, int processoIndex);
 void criarProcessoSimulado(GerenciadorProcessos *gerenciador, int n);
 void adicionarProcessoBloqueado(GerenciadorProcessos *gerenciador, int processoIndex);
@@ -30,6 +30,8 @@ void executarProcessoAtual(GerenciadorProcessos * gerenciador, int indexCPU);
 void processarComando(GerenciadorProcessos * gerenciador, Instrucao instrucao, int indexCPU);
 
 // escalonamento
+void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador);
+void escalonadorFilaDePrioridades(GerenciadorProcessos *gerenciador);
 void colocaProcessoNaCPU(GerenciadorProcessos *gerenciador, int indexCPU);
 void executandoProcessoCPU(GerenciadorProcessos *gerenciador);
 void avaliarTempoProcesso(GerenciadorProcessos *gerenciador);
@@ -50,12 +52,16 @@ void comandoA(CPU *cpu, int index, int valor);
 void comandoS(CPU *cpu, int index, int valor);
 void comandoF(GerenciadorProcessos *gerenciador, int index, int valor);
 void comandoR(CPU *cpu, Instrucao instrucao);
+void comandoT(GerenciadorProcessos *gerenciador, int indexCPU);
 
 void printTableBorder();
 
 void lerArquivo(char *arquivoEntrada);
 void lerTerminal(char* retorno);
 void remove_char(char *str, char garbage);
+void printInstrucao(Instrucao instrucao);
+void printCPUInfo(int cpuIndex, ProcessoSimulado *processo, int contadorPrograma);
+
 
 //---------------------------------------------------------------------------------------
 

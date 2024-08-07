@@ -30,6 +30,7 @@ typedef struct Instrucao
     int index;
     int valor;
     char arquivo[MAX_CMD_LEN];
+    int sucesso;
 } Instrucao;
 
 

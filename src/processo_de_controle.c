@@ -55,7 +55,7 @@ int main() {
 
         } while (entradaUsu != 1 || entradaUsu != 2);
         printf("String enviada: %s\n", stringEntrada);
-        write(fd[1], stringEntrada, sizeof(stringEntrada) + 2);
+        write(fd[1], stringEntrada, sizeof(stringEntrada));
         close(fd[1]); // Fechar o lado de escrita do Pipe
         wait(NULL);   // Esperar o filho terminar
         exit(0);
@@ -73,7 +73,8 @@ int main() {
         /* Inicializar o Gerenciador de Processos */
         int comecou = 0;
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt",getpid());
+        iniciarGerenciadorProcessos(&gerenciador,"./entry/input1.txt",getpid(), 3);
+        //iniciarFilaDePrioridades(&gerenciador);
         colocaProcessoNaCPU(&gerenciador, 0);
 
         /* No filho, ler do Pipe e processar comandos */
@@ -92,34 +93,30 @@ int main() {
             switch (str_recebida[0]) {
                 case 'U':
                     
-                    printf("Fim de uma unidade de tempo.\n");
+                    
 
                     // verificando se a processos na CPU
                     if (existeProcessoEmAlgumaCPU(&gerenciador) == 1)
                     {
-                        executandoProcessoCPU(&gerenciador);
-                        avaliarTempoProcesso(&gerenciador);
+                        escalonadorFilaDePrioridades(&gerenciador);
                     }
-                    else
-                    {
-                        // printf("Não há processos em execução.\n");
-                    }
-
-                    avaliarCPUVazia(&gerenciador);
+                    
+                    printf("\n Fim de uma unidade de tempo.\n");
                     break;
                 case 'I':
 
-                    printf("Imprimindo estado atual do sistema.\n");
+                    printf("\nImprimindo estado atual do sistema.\n");
                     // Chamar função do Gerenciador de Processos para imprimir o estado
                     for (int i = 0; i < gerenciador.quantidadeCPUs; i++)
                     {
                         imprimeCPU(gerenciador.cpus[i], i);
                     }
-                    
+                    printf("Finalizando impressão do estado atual do sistema.\n");
                     break;
                 case 'M':
-                    printf("Imprimindo tempo médio de resposta e finalizando.\n");
+                    printf("\nImprimindo tempo médio de resposta e finalizando.\n");
                     // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
+                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
                     break;
                 default:
                     printf("Comando desconhecido: %c\n", str_recebida[0]);

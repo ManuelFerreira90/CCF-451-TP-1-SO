@@ -19,7 +19,7 @@ void enfileirarDinamica(FilaDinamica *fila, int item)
     Node *novoNode = (Node *)malloc(sizeof(Node));
     if (novoNode == NULL)
     {
-        printf("Erro: não foi possível alocar memória!\n");
+        // printf("Erro: não foi possível alocar memória!\n");
         exit(EXIT_FAILURE);
     }
     novoNode->dado = item;
@@ -62,7 +62,7 @@ int frenteFilaDinamica(FilaDinamica *fila)
 {
     if (isFilaDinamicaVazia(fila))
     {
-        printf("Erro: a fila está vazia!\n");
+        // printf("Erro: a fila está vazia!\n");
         return -1;
     }
     return fila->frente->dado;
@@ -79,13 +79,13 @@ void liberarFilaDinamica(FilaDinamica *fila)
 
 void imprimirFilaDinamica(FilaDinamica *fila)
 {
-    printf("Tamanho da fila: %d\n", fila->tamanho);
+    // printf("Tamanho da fila: %d\n", fila->tamanho);
     Node *tempNode = fila->frente;
-    printf("Fila: ");
+    // printf("Fila: ");
     while (tempNode != NULL)
     {
-        printf("%d ", tempNode->dado);
+        // printf("%d ", tempNode->dado);
         tempNode = tempNode->proximo;
     }
-    printf("\n");
+    // printf("\n");
 }

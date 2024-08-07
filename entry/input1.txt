@@ -13,4 +13,6 @@ F 1
 R file_b
 F 1
 R file_c
+F 1
+R file_d
 T

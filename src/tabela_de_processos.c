@@ -26,12 +26,12 @@ void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
     if (!isTabelaProcessosCheia(tabela))
     {
         tabela->listaProcessos[tabela->ultimoProcessoIndex] = processo;
-        printf("Processo novo inserido na posicao %d ",tabela->listaProcessos[tabela->ultimoProcessoIndex]->ID_Processo);
+        // printf("Processo novo inserido na posicao %d ",tabela->listaProcessos[tabela->ultimoProcessoIndex]->ID_Processo);
         tabela->ultimoProcessoIndex++;
     }
     else
     {
-        fprintf(stderr, "Erro: Tabela de processos cheia!\n");
+        // fprintf(stderr, "Erro: Tabela de processos cheia!\n");
     }
 }
 
@@ -47,7 +47,7 @@ void retirarTabelaProcessos(int index, tabelaProcessos *tabela)
     }
     else
     {
-        fprintf(stderr, "Erro: Índice inválido ou tabela de processos vazia!\n");
+        // fprintf(stderr, "Erro: Índice inválido ou tabela de processos vazia!\n");
     }
 }
 
