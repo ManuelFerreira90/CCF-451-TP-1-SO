@@ -36,14 +36,28 @@ int main()
 
         // Leitura do número de CPUs desejadas
         int numero_CPUS;
-        printf("Digite o número de CPUs desejadas: ");
-        scanf("%d", &numero_CPUS);
+
+        do
+        {
+            printf("Digite o número de CPUs desejadas: ");
+            scanf("%d", &numero_CPUS);
+            if (numero_CPUS < 1)
+            {
+                printf("Número de CPUs inválido. Tente novamente.\n");
+            }
+        } while (numero_CPUS < 1);
 
         // Leitura do tipo de escalonamento
         int tipo_escalonamento;
-        printf("Escolha o tipo de escalonamento (0: Fila de Prioridades, 1: Round Robin): ");
-        scanf("%d", &tipo_escalonamento);
-
+        do
+        {
+            printf("Escolha o tipo de escalonamento (0: Fila de Prioridades, 1: Round Robin): ");
+            scanf("%d", &tipo_escalonamento);
+            if (tipo_escalonamento != 0 && tipo_escalonamento != 1)
+            {
+                printf("Tipo de escalonamento inválido. Tente novamente.\n");
+            }
+        } while (tipo_escalonamento != 0 && tipo_escalonamento != 1);
         // Enviar o número de CPUs e o tipo de escalonamento para o processo filho
         write(fd[1], &numero_CPUS, sizeof(int));
         write(fd[1], &tipo_escalonamento, sizeof(int));
@@ -145,6 +159,8 @@ int main()
                 printf("\nImprimindo tempo médio de resposta e finalizando.\n");
                 // Chamar função do Gerenciador de Processos para imprimir tempo médio e finalizar
                 imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+                break;
+            case ' ':
                 break;
             default:
                 printf("Comando desconhecido: %c\n", str_recebida[0]);
