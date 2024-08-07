@@ -37,19 +37,6 @@ void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
 
 void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
 {
-    // if (!isTabelaProcessosVazia(tabela) && index >= 0 && index < tabela->ultimoProcessoIndex)
-    // {
-    //     for (int i = index; i < tabela->ultimoProcessoIndex - 1; i++)
-    //     {
-    //         tabela->listaProcessos[i] = tabela->listaProcessos[i + 1];
-    //     }
-    //     tabela->ultimoProcessoIndex--;
-    // }
-    // else
-    // {
-    //     // fprintf(stderr, "Erro: Índice inválido ou tabela de processos vazia!\n");
-    // }
-
     int foundIndex = -1;
 
     // Procura o processo com o ID_Processo correspondente

@@ -39,17 +39,6 @@ void comandoB(GerenciadorProcessos *gerenciador, int indexCPU)
     iniciarCPU(&gerenciador->cpus[indexCPU]);
 }
 
-// REAVALIAR A QUESTÃO DE TERMINAR
-// Termina o processo em execução
-/*
-TODO:
-
-@AlvaroGS
-
-Lógica Burra, refazer!
-
-
-*/
 
 void comandoD(CPU *cpu, int index)
 {
@@ -95,17 +84,14 @@ void comandoF(GerenciadorProcessos *gerenciador, int indexCPU, int valor)
 
     ProcessoSimulado *novoProcesso = criarNovoProcessoAPartirdoPai(gerenciador->cpus[indexCPU].processoEmExecucao, gerenciador->TabelaProcessos.ultimoProcessoIndex);
     inserirTabelaProcessos(novoProcesso, &(gerenciador->TabelaProcessos));
-    
-    printf("Algorigmo de escalonamento: %d\n", gerenciador->algoritmoEscalonamento);
+
     if(gerenciador->algoritmoEscalonamento == 0)
     {
         adicionarProcessoProntoFilaDePrioridade(gerenciador, novoProcesso->ID_Processo);
     }
     else if(gerenciador->algoritmoEscalonamento == 1)
     {
-        printf("Enfileirando processo %d na fila de prontos\n", novoProcesso->ID_Processo);
         enfileirarDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto), novoProcesso->ID_Processo);
-        imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto));
     }
 
     gerenciador->cpus[indexCPU].contadorPrograma += (valor + 1);
@@ -124,12 +110,10 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoIndex);
     if (processo != NULL)
     {
-        printf("Processo %d terminado\n", processo->ID_Processo);
         retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
         gerenciador->processosEmExecucao[indexCPU] = -1;
         incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
         gerenciador->processosTerminados += 1;
-        printf("TEMPO: %d\n", processo->tempoCPU.valor);
         iniciarCPU(&gerenciador->cpus[indexCPU]);
         free(processo->memoria);
         free(processo->conjuntoInstrucoes);
