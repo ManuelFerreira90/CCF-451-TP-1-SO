@@ -22,8 +22,8 @@ void inicializarTabelaProcessos(tabelaProcessos *tabela);
 void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela);
 void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo);
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista);
-void imprimeProcesso(ProcessoSimulado *processo);
-void imprimeTabelaProcessos(tabelaProcessos *tabela);
+void imprimeProcesso(ProcessoSimulado *processo, int algoritmoEscalonamento);
+void imprimeTabelaProcessos(tabelaProcessos *tabela, int algoritmoEscalonamento);
 const char *estadoToString(Estados estado);
 ProcessoSimulado *getProcesso(tabelaProcessos *tabela, int indice);
 

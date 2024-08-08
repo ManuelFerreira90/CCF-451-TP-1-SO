@@ -5,14 +5,23 @@ Estado Execução = 2
 */
 #include "../headers/processo.h"
 
-ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int PID_Pai, int ID)
+ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int PID_Pai, int ID, int algoritmoEscalonamento)
 {
     ProcessoSimulado *processo;
 
     processo = (ProcessoSimulado *)malloc(sizeof(ProcessoSimulado));
     processo->PC = 0;
     processo->EstadosProcesso = Pronto;
-    processo->prioridade = 0;
+    
+    if (algoritmoEscalonamento == 0)
+    {
+        processo->prioridade = 0;
+    }
+    else
+    {
+        processo->prioridade = -1;
+    }
+
     processo->memoria = NULL;
     processo->ID_Processo = ID;
     processo->ID_Processo_Pai = PID_Pai;
@@ -64,7 +73,6 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai, i
     return novoProcesso;
 }
 
-
 void imprimirProcesso(ProcessoSimulado *processo)
 {
     printf("=============================================\n");
@@ -74,7 +82,10 @@ void imprimirProcesso(ProcessoSimulado *processo)
     printf("| %-20s | %-18d |\n", "ID do processo pai", processo->ID_Processo_Pai);
     printf("| %-20s | %-18d |\n", "PC", processo->PC);
     printf("| %-20s | %-18d |\n", "Estado", processo->EstadosProcesso);
-    printf("| %-20s | %-18d |\n", "Prioridade", processo->prioridade);
+    if (processo->prioridade != -1) // indica que não foi usado o escalonamento por prioridade
+    {
+        printf("| %-20s | %-18d |\n", "Prioridade", processo->prioridade);
+    }
     printf("| %-21s | %-18d |\n", "Tempo de início", processo->tempoInicio.valor);
     printf("| %-20s | %-18d |\n", "Tempo de CPU", processo->tempoCPU.valor);
     printf("| %-22s | %-18d |\n", "Qtd de instruções", processo->quantidadeInstrucao);
@@ -84,9 +95,10 @@ void imprimirProcesso(ProcessoSimulado *processo)
 
     for (int i = 0; i < processo->quantidadeInteiros; i++)
     {
-        if (i > 0) printf(" ");
+        if (i > 0)
+            printf(" ");
         printf(" %d", processo->memoria[i]);
     }
-    
+
     printf("\n=============================================\n");
 }

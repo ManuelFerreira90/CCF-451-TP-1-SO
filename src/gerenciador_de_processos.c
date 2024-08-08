@@ -220,7 +220,7 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     gerenciador->algoritmoEscalonamento = escalonador;
 
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
-    ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0);
+    ProcessoSimulado *processo = inicializaProcesso(arquivoEntrada, contarQuantidadeInstrucoes(arquivoEntrada), PID_Pai, 0, gerenciador->algoritmoEscalonamento);
     inserirTabelaProcessos(processo, &(gerenciador->TabelaProcessos));
 
     gerenciador->cpus = (CPU *)malloc(sizeof(CPU) * numsCPUs);
@@ -472,10 +472,13 @@ int trocaDeContexto(GerenciadorProcessos *gerenciador, int i)
         if (gerenciador->cpus[i].fatiaTempo.valor == 0)
         {
             // Verifica a fatia de tempo do processo
-            if (processo->prioridade < NUM_PRIORIDADES - 1)
+            if (gerenciador->algoritmoEscalonamento == 0)
             {
-                // Aumenta a prioridade se não for a máxima
-                processo->prioridade++;
+                if (processo->prioridade < NUM_PRIORIDADES - 1)
+                {
+                    // Aumenta a prioridade se não for a máxima
+                    processo->prioridade++;
+                }
             }
 
             // Remove o processo da execução
