@@ -26,29 +26,57 @@ void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
     if (!isTabelaProcessosCheia(tabela))
     {
         tabela->listaProcessos[tabela->ultimoProcessoIndex] = processo;
-        printf("Processo novo inserido na posicao %d ",tabela->listaProcessos[tabela->ultimoProcessoIndex]->ID_Processo);
+        // printf("Processo novo inserido na posicao %d ",tabela->listaProcessos[tabela->ultimoProcessoIndex]->ID_Processo);
         tabela->ultimoProcessoIndex++;
     }
     else
     {
-        fprintf(stderr, "Erro: Tabela de processos cheia!\n");
+        // fprintf(stderr, "Erro: Tabela de processos cheia!\n");
     }
 }
 
-void retirarTabelaProcessos(int index, tabelaProcessos *tabela)
+void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
 {
-    if (!isTabelaProcessosVazia(tabela) && index >= 0 && index < tabela->ultimoProcessoIndex)
+    int foundIndex = -1;
+
+    // Procura o processo com o ID_Processo correspondente
+    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
     {
-        for (int i = index; i < tabela->ultimoProcessoIndex - 1; i++)
+        if (tabela->listaProcessos[i]->ID_Processo == ID_Processo)
         {
-            tabela->listaProcessos[i] = tabela->listaProcessos[i + 1];
+            foundIndex = i;
+            break;
         }
-        tabela->ultimoProcessoIndex--;
     }
-    else
+
+    if (foundIndex == -1)
     {
-        fprintf(stderr, "Erro: Índice inválido ou tabela de processos vazia!\n");
+        printf("Processo com ID %d não encontrado.\n", ID_Processo);
+        return;
     }
+
+    // Libera a memória alocada para o processo
+    // free(tabela->listaProcessos[foundIndex]->memoria);
+    // free(tabela->listaProcessos[foundIndex]->conjuntoInstrucoes);
+    // free(tabela->listaProcessos[foundIndex]);
+
+    // Desloca os processos após o índice encontrado para a esquerda
+    for (int i = foundIndex; i < tabela->ultimoProcessoIndex; i++)
+    {
+        tabela->listaProcessos[i] = tabela->listaProcessos[i + 1];
+    }
+
+    // Atualiza o índice do último processo
+    tabela->listaProcessos[tabela->ultimoProcessoIndex] = NULL;
+    tabela->ultimoProcessoIndex--;
+
+    // Ajusta o índice do primeiro processo se necessário
+    if (tabela->primeiroProcessoIndex > tabela->ultimoProcessoIndex)
+    {
+        tabela->primeiroProcessoIndex = tabela->ultimoProcessoIndex = -1;
+    }
+
+    printf("Processo com ID %d removido.\n", ID_Processo);
 }
 
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista)
@@ -68,21 +96,16 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
     return lista_indices;
 }
 
-ProcessoSimulado *getProcesso(tabelaProcessos *tabela, int indice)
+ProcessoSimulado *getProcesso(tabelaProcessos *tabela, int ID_Processo)
 {
-    if (indice < 0 || indice >= MAX_PROCESSOS)
+    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
     {
-        // Se o índice for inválido, retorna NULL ou trata o erro conforme desejado.
-        return NULL;
+        if (tabela->listaProcessos[i]->ID_Processo == ID_Processo)
+        {
+            return tabela->listaProcessos[i];
+        }
     }
-
-    if (tabela->listaProcessos[indice] == NULL)
-    {
-        // Se o processo no índice não existe, retorna NULL ou trata o erro conforme desejado.
-        return NULL;
-    }
-
-    return tabela->listaProcessos[indice];
+    return NULL;
 }
 
 // Função auxiliar para converter o estado do processo em uma string

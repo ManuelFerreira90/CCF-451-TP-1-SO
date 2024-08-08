@@ -14,8 +14,7 @@ typedef struct Tempo{
 
 void inicializarTempo(Tempo *tempo);
 void setTempo(Tempo *tempo,int valor);
-void incrementarTempo(Tempo *tempo);
-
+void incrementarTempo(Tempo *tempo, Tempo * adicional);
 //---------------------------------------------------------------------------------------
 
 #endif // TEMPO_H
