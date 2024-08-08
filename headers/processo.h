@@ -35,30 +35,28 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai, i
 
 #endif // PROCESSO_H
 
-
 // void atualizarProcessoEmExecucao(GerenciadorProcessos *gerenciador, int cpuIndex, int processoId)
 // {
 //     ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoId);
-    
+
 //     // Atualiza a CPU com o processo em execução
 //     gerenciador->cpus[cpuIndex].processoEmExecucao = processo;
-    
+
 //     // Atualiza os ponteiros da CPU para apontar para as variáveis do processo
 //     gerenciador->cpus[cpuIndex].contadorPrograma = &(processo->PC);
 //     gerenciador->cpus[cpuIndex].memoriaVect = processo->memoria;
 //     gerenciador->cpus[cpuIndex].quantidadeInteiros = &(processo->quantidadeInteiros);
-    
+
 //     // Atualiza as estruturas de gerenciamento de processos
 //     gerenciador->EstadosProcessos.filasEmExecucao[cpuIndex] = processoId;
 //     processo->EstadosProcesso = Execucao;
-    
+
 //     printf("CPU INDEX Processo: %d\n", processo->ID_Processo);
 //     printf("Processo %d escolhido para a CPU %d\n", processoId, cpuIndex);
-    
+
 //     iniciarVetorMemoria(&gerenciador->cpus[cpuIndex]);
 //     gerenciador->cpus[cpuIndex].contadorPrograma = processo->PC;
 // }
-
 
 // typedef struct CPU
 // {

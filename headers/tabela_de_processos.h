@@ -20,13 +20,12 @@ int isTabelaProcessosCheia(tabelaProcessos *tabela);
 int getTamanhoTabelaProcessos(tabelaProcessos *tabela);
 void inicializarTabelaProcessos(tabelaProcessos *tabela);
 void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela);
-//void retirarTabelaProcessos(int index, tabelaProcessos *tabela);
-void retirarTabelaProcessos(tabelaProcessos * tabela, int ID_Processo);
+void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo);
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista);
 void imprimeProcesso(ProcessoSimulado *processo);
 void imprimeTabelaProcessos(tabelaProcessos *tabela);
-const char* estadoToString(Estados estado);
-ProcessoSimulado* getProcesso(tabelaProcessos *tabela, int indice);
+const char *estadoToString(Estados estado);
+ProcessoSimulado *getProcesso(tabelaProcessos *tabela, int indice);
 
 //---------------------------------------------------------------------------------------
 

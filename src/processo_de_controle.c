@@ -3,8 +3,8 @@
 #include "../headers/gerenciador_de_processos.h"
 #include "../headers/processoControle.h"
 
-//TODO: @Tarik 1. Implementar função para imprimir cada processo com usa memória e tempo de CPU
-//TODO: @Tarik 2. Implementar função para as filas de prioridades ou fila de round robin, confome a escolha inicial do escalonamento
+// TODO: @Tarik 1. Implementar função para imprimir cada processo com usa memória e tempo de CPU
+// TODO: @Tarik 2. Implementar função para as filas de prioridades ou fila de round robin, confome a escolha inicial do escalonamento
 
 int processoControle()
 {
@@ -82,7 +82,6 @@ int processoControle()
                 else if (entradaUsu == 2)
                 {
                     lerArquivo(stringEntrada);
-
                 }
                 break;
             }
@@ -112,7 +111,7 @@ int processoControle()
         ssize_t bytes_read;
 
         /* Inicializar o Gerenciador de Processos */
-        int comecou = 0;
+        int unidadeTempo = 0;
         int numero_CPUS, tipo_escalonamento;
 
         // Ler o número de CPUs e o tipo de escalonamento do pipe
@@ -137,6 +136,7 @@ int processoControle()
             switch (str_recebida[0])
             {
             case 'U':
+                printf("\nUnidade de tempo: %d\n", unidadeTempo);
                 if (tipo_escalonamento == 0)
                 {
                     // printf("\nEscalonador de Fila de Prioridades\n");
@@ -149,7 +149,8 @@ int processoControle()
                 }
                 incrementarTempoCPU(&gerenciador);
 
-                printf("\n Fim de uma unidade de tempo.\n");
+                printf("Fim de uma unidade de tempo.\n");
+                unidadeTempo++;
                 break;
             case 'I':
                 printf("\nImprimindo estado atual do sistema.\n");
@@ -229,7 +230,6 @@ void lerArquivo(char *retorno)
         }
 
         fclose(arquivo);
-       
     }
 }
 
