@@ -19,7 +19,7 @@ void enfileirarDinamica(FilaDinamica *fila, int item)
     Node *novoNode = (Node *)malloc(sizeof(Node));
     if (novoNode == NULL)
     {
-        // printf("Erro: não foi possível alocar memória!\n");
+        printf("Erro: não foi possível alocar memória!\n");
         exit(EXIT_FAILURE);
     }
     novoNode->dado = item;
