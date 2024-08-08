@@ -51,7 +51,6 @@ void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
 
     if (foundIndex == -1)
     {
-        printf("Processo com ID %d não encontrado.\n", ID_Processo);
         return;
     }
 
@@ -75,8 +74,6 @@ void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
     {
         tabela->primeiroProcessoIndex = tabela->ultimoProcessoIndex = -1;
     }
-
-    printf("Processo com ID %d removido.\n", ID_Processo);
 }
 
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista)
