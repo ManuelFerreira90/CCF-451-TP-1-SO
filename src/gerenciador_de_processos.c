@@ -161,17 +161,11 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     // Se o processo for válido, termina-o
     if (processo != NULL)
     {
-        // Remove o processo da tabela de processos do gerenciador
-        retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
-
-        // Marca a CPU como não tendo nenhum processo em execução
-        gerenciador->processosEmExecucao[indexCPU] = -1;
-
-        // Atualiza o tempo médio de execução e o contador de processos terminados
+        printf("tempo cpu processo: %d \n", processo->tempoCPU.valor);
         gerenciador->tempoMedio.valor += processo->tempoCPU.valor;
         gerenciador->processosTerminados += 1;
-
-        // Reinicia a CPU especificada para estar pronta para executar um novo processo
+        retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
+        gerenciador->processosEmExecucao[indexCPU] = -1;
         iniciarCPU(&gerenciador->cpus[indexCPU]);
     }
 }
@@ -224,7 +218,7 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, in
     }
     // Decrementa o valor do tempo de fatia da CPU.
     gerenciador->cpus[indexCPU].fatiaTempo.valor--;
-    // Atualiza os dados do processo na CPU após a execução do comando.
+    gerenciador->cpus[indexCPU].tempoUsado.valor++;
     atualizaDadosProcesso(&(gerenciador->cpus[indexCPU]));
 }
 
@@ -287,9 +281,8 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     printf("Iniciando gerenciador de processos...\n");
     printf("Iniciado com %d CPUs\n", numsCPUs);
 
-    // Inicializa os tempos de referência para o gerenciamento dos processos.
-    inicializarTempo(&gerenciador->tempoAtual);
-    inicializarTempo(&gerenciador->tempoMedio);
+    // inicializarTempo(&gerenciador->tempoAtual);
+    // inicializarTempo(&gerenciador->tempoMedio);
 
     // Inicializa contadores e variáveis para o gerenciador.
     gerenciador->processosTerminados = 0;
@@ -364,11 +357,9 @@ void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador)
 // Formata a saída para melhor apresentação.
 void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador)
 {
-    if (gerenciador.processosTerminados > 0)
-    {
-        // Calcula o tempo médio dividindo o tempo total pelo número de processos terminados.
-        gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
-    }
+
+    gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
+
     printf("\n");
     printTableBorder(); // Imprime a borda da tabela para formatação.
 
@@ -577,22 +568,13 @@ int trocaDeContexto(GerenciadorProcessos *gerenciador, int i)
 
     if (processoEmExecucaoID != -1)
     {
-        // Verifica se há um processo em execução na CPU.
-        ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[processoEmExecucaoID];
+        // Verifica se há um processo em execução
+        ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoEmExecucaoID);
 
         // Verifica se a fatia de tempo expirou.
         if (gerenciador->cpus[i].fatiaTempo.valor == 0)
         {
-            // Se o algoritmo de escalonamento é de prioridade, aumenta a prioridade do processo.
-            if (gerenciador->algoritmoEscalonamento == 0)
-            {
-                if (processo->prioridade < NUM_PRIORIDADES - 1)
-                {
-                    processo->prioridade++;
-                }
-            }
-
-            // Remove o processo da CPU e marca-o como pronto.
+            // Remove o processo da execução
             gerenciador->processosEmExecucao[i] = -1;
             processo->EstadosProcesso = Pronto;
 
@@ -644,8 +626,7 @@ void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador)
         idProcesso = trocaDeContexto(gerenciador, i);
         if (idProcesso != -1)
         {
-            ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[idProcesso];
-            // Aumenta a prioridade do processo se não for a máxima.
+            ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, idProcesso);
             if (processo->prioridade < NUM_PRIORIDADES - 1)
             {
                 processo->prioridade++;
