@@ -1,45 +1,50 @@
 #include "../headers/tabela_de_processos.h"
 
+// Verifica se a tabela de processos está vazia
 int isTabelaProcessosVazia(tabelaProcessos *tabela)
 {
     return tabela->ultimoProcessoIndex == 0;
 }
 
+// Verifica se a tabela de processos está cheia
 int isTabelaProcessosCheia(tabelaProcessos *tabela)
 {
     return tabela->ultimoProcessoIndex >= MAX_PROCESSOS;
 }
 
+// Retorna o tamanho atual da tabela de processos
 int getTamanhoTabelaProcessos(tabelaProcessos *tabela)
 {
     return tabela->ultimoProcessoIndex;
 }
 
+// Inicializa a tabela de processos, configurando os índices inicial e final
 void inicializarTabelaProcessos(tabelaProcessos *tabela)
 {
     tabela->primeiroProcessoIndex = 0;
     tabela->ultimoProcessoIndex = tabela->primeiroProcessoIndex;
 }
 
+// Insere um novo processo na tabela, se esta não estiver cheia
 void inserirTabelaProcessos(ProcessoSimulado *processo, tabelaProcessos *tabela)
 {
     if (!isTabelaProcessosCheia(tabela))
     {
         tabela->listaProcessos[tabela->ultimoProcessoIndex] = processo;
-        // printf("Processo novo inserido na posicao %d ",tabela->listaProcessos[tabela->ultimoProcessoIndex]->ID_Processo);
         tabela->ultimoProcessoIndex++;
     }
     else
     {
-        // fprintf(stderr, "Erro: Tabela de processos cheia!\n");
+        // Se a tabela estiver cheia, uma mensagem de erro pode ser exibida
     }
 }
 
+// Remove um processo da tabela pelo seu ID, liberando a memória associada
 void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
 {
     int foundIndex = -1;
 
-    // Procura o processo com o ID_Processo correspondente
+    // Procura o processo com o ID especificado na tabela
     for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
     {
         if (tabela->listaProcessos[i]->ID_Processo == ID_Processo)
@@ -49,32 +54,34 @@ void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
         }
     }
 
+    // Se o processo não for encontrado, a função retorna
     if (foundIndex == -1)
     {
         return;
     }
 
-    // Libera a memória alocada para o processo
+    // Libera a memória alocada para o processo removido
     free(tabela->listaProcessos[foundIndex]->memoria);
     free(tabela->listaProcessos[foundIndex]);
 
-    // Desloca os processos após o índice encontrado para a esquerda
+    // Desloca os processos seguintes para preencher o espaço vazio
     for (int i = foundIndex; i < tabela->ultimoProcessoIndex; i++)
     {
         tabela->listaProcessos[i] = tabela->listaProcessos[i + 1];
     }
 
-    // Atualiza o índice do último processo
+    // Limpa a referência ao último processo na tabela e ajusta o índice
     tabela->listaProcessos[tabela->ultimoProcessoIndex] = NULL;
     tabela->ultimoProcessoIndex--;
 
-    // Ajusta o índice do primeiro processo se necessário
+    // Ajusta o índice do primeiro processo se a tabela estiver vazia
     if (tabela->primeiroProcessoIndex > tabela->ultimoProcessoIndex)
     {
         tabela->primeiroProcessoIndex = tabela->ultimoProcessoIndex = -1;
     }
 }
 
+// Retorna uma lista de índices de processos que estão em um determinado estado
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista)
 {
     int tamanhoTabela = getTamanhoTabelaProcessos(tabela);
@@ -92,6 +99,7 @@ int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, in
     return lista_indices;
 }
 
+// Retorna o processo associado ao ID fornecido, se existir
 ProcessoSimulado *getProcesso(tabelaProcessos *tabela, int ID_Processo)
 {
     for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
@@ -120,7 +128,7 @@ const char *estadoToString(Estados estado)
     }
 }
 
-// Função para imprimir um único processo
+// Imprime as informações de um processo, considerando o algoritmo de escalonamento
 void imprimeProcesso(ProcessoSimulado *processo, int algoritmoEscalonamento)
 {
     if (processo != NULL)
@@ -145,7 +153,7 @@ void imprimeProcesso(ProcessoSimulado *processo, int algoritmoEscalonamento)
     }
 }
 
-// Função para imprimir a tabela de processos
+// Imprime a tabela de processos, formatada de acordo com o algoritmo de escalonamento
 void imprimeTabelaProcessos(tabelaProcessos *tabela, int algoritmoEscalonamento)
 {
 
