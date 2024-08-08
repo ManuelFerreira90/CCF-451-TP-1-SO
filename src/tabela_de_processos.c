@@ -55,9 +55,8 @@ void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
     }
 
     // Libera a memória alocada para o processo
-    // free(tabela->listaProcessos[foundIndex]->memoria);
-    // free(tabela->listaProcessos[foundIndex]->conjuntoInstrucoes);
-    // free(tabela->listaProcessos[foundIndex]);
+    free(tabela->listaProcessos[foundIndex]->memoria);
+    free(tabela->listaProcessos[foundIndex]);
 
     // Desloca os processos após o índice encontrado para a esquerda
     for (int i = foundIndex; i < tabela->ultimoProcessoIndex; i++)

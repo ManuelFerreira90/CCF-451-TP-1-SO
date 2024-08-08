@@ -108,13 +108,9 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     {
         retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
         gerenciador->processosEmExecucao[indexCPU] = -1;
-        //incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
         gerenciador->tempoMedio.valor += processo->tempoCPU.valor;
         gerenciador->processosTerminados += 1;
         iniciarCPU(&gerenciador->cpus[indexCPU]);
-        // free(processo->memoria);
-        // free(processo->conjuntoInstrucoes);
-        // free(processo);
     }
 }
 
