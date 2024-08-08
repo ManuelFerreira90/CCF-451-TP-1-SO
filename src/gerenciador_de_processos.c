@@ -106,10 +106,11 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoIndex);
     if (processo != NULL)
     {
-        retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
-        gerenciador->processosEmExecucao[indexCPU] = -1;
+        printf("tempo cpu processo: %d \n", processo->tempoCPU.valor);
         gerenciador->tempoMedio.valor += processo->tempoCPU.valor;
         gerenciador->processosTerminados += 1;
+        retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
+        gerenciador->processosEmExecucao[indexCPU] = -1;
         iniciarCPU(&gerenciador->cpus[indexCPU]);
     }
 }
@@ -158,6 +159,7 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, in
         break;
     }
     gerenciador->cpus[indexCPU].fatiaTempo.valor--;
+    gerenciador->cpus[indexCPU].tempoUsado.valor++;
     atualizaDadosProcesso(&(gerenciador->cpus[indexCPU]));
 }
 
@@ -212,8 +214,8 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     printf("Iniciando gerenciador de processos...\n");
     printf("Iniciado com %d CPUs\n", numsCPUs);
 
-    inicializarTempo(&gerenciador->tempoAtual);
-    inicializarTempo(&gerenciador->tempoMedio);
+    // inicializarTempo(&gerenciador->tempoAtual);
+    // inicializarTempo(&gerenciador->tempoMedio);
 
     gerenciador->processosTerminados = 0;
     gerenciador->tempoMedio.valor = 0;
@@ -277,10 +279,9 @@ void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador)
 
 void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador)
 {
-    if (gerenciador.tempoMedio.valor)
-    {
-        gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
-    }
+
+    gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
+
     printf("\n");
     printTableBorder();
     printf("Processos Terminados: %d\n", gerenciador.processosTerminados);
