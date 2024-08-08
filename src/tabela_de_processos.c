@@ -121,36 +121,68 @@ const char *estadoToString(Estados estado)
 }
 
 // Função para imprimir um único processo
-void imprimeProcesso(ProcessoSimulado *processo)
+void imprimeProcesso(ProcessoSimulado *processo, int algoritmoEscalonamento)
 {
     if (processo != NULL)
     {
-        printf("| %-11d | %-14d | %-10d | %-11s | %-10d |\n",
-               processo->ID_Processo,
-               processo->ID_Processo_Pai,
-               processo->PC,
-               estadoToString(processo->EstadosProcesso),
-               processo->prioridade);
+        if (algoritmoEscalonamento == 0)
+        {
+            printf("| %-11d | %-14d | %-10d | %-12s | %-10d |\n",
+                   processo->ID_Processo,
+                   processo->ID_Processo_Pai,
+                   processo->PC,
+                   estadoToString(processo->EstadosProcesso),
+                   processo->prioridade);
+        }
+        else if (algoritmoEscalonamento == 1)
+        {
+            printf("| %-11d | %-14d | %-10d | %-12s |\n",
+                   processo->ID_Processo,
+                   processo->ID_Processo_Pai,
+                   processo->PC,
+                   estadoToString(processo->EstadosProcesso));
+        }
     }
 }
 
 // Função para imprimir a tabela de processos
-void imprimeTabelaProcessos(tabelaProcessos *tabela)
+void imprimeTabelaProcessos(tabelaProcessos *tabela, int algoritmoEscalonamento)
 {
-    printf("========================================================================\n");
-    printf("|                            Tabela De Processos                       |\n");
-    printf("========================================================================\n");
-    printf("+-------------+----------------+------------+-------------+------------+\n");
-    printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
-    printf("+-------------+----------------+------------+-------------+------------+\n");
 
-    for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
+    if (algoritmoEscalonamento == 0)
     {
-        if (tabela->listaProcessos[i] != NULL)
-        {
-            imprimeProcesso(tabela->listaProcessos[i]);
-        }
-    }
+        printf("========================================================================\n");
+        printf("|                            Tabela De Processos                       |\n");
+        printf("========================================================================\n");
+        printf("+-------------+----------------+------------+-------------+------------+\n");
+        printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
+        printf("+-------------+----------------+------------+-------------+------------+\n");
 
-    printf("+-------------+----------------+------------+-------------+------------+\n");
+        for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
+        {
+            if (tabela->listaProcessos[i] != NULL)
+            {
+                imprimeProcesso(tabela->listaProcessos[i], algoritmoEscalonamento);
+            }
+        }
+        printf("+-------------+----------------+------------+-------------+------------+\n");
+    }
+    else if (algoritmoEscalonamento == 1)
+    {
+        printf("===========================================================\n");
+        printf("|                  Tabela De Processos                    |\n");
+        printf("===========================================================\n");
+        printf("+-------------+----------------+------------+-------------+\n");
+        printf("| ID Processo | ID Processo Pai| PC         | Estado      |\n");
+        printf("+-------------+----------------+------------+-------------+\n");
+
+        for (int i = tabela->primeiroProcessoIndex; i <= tabela->ultimoProcessoIndex; i++)
+        {
+            if (tabela->listaProcessos[i] != NULL)
+            {
+                imprimeProcesso(tabela->listaProcessos[i], algoritmoEscalonamento);
+            }
+        }
+        printf("+-------------+----------------+------------+-------------+\n");
+    }
 }

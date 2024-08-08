@@ -16,7 +16,7 @@ typedef struct
     pid_t ID_Processo_Pai;
     int PC;
     Estados EstadosProcesso;
-    int prioridade;
+    int prioridade; // usado quando escalonamento por prioridade
     int *memoria;
     int quantidadeInteiros;
     char *conjuntoInstrucoes;
@@ -29,7 +29,7 @@ typedef struct
 // Declarações de funções e estruturas
 //---------------------------------------------------------------------------------------
 
-ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int PID_pai, int id);
+ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeInstrucao, int PID_pai, int id, int algoritmoEscalonamento);
 ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai, int ID_processo);
 void imprimirProcesso(ProcessoSimulado *processo);
 //---------------------------------------------------------------------------------------

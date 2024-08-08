@@ -16,8 +16,7 @@ int processoControle()
     char buffer[BUFFER];
     ssize_t bytes_read;
     char escolha;
-    char stringEntrada[100];
-    char stringSaida[100];
+    char stringEntrada[1000];
     FILE *entrada = stdin; // Por padrão, lê da entrada padrão
 
     /* Criando o Pipe */
@@ -200,7 +199,7 @@ void processoImpressao(GerenciadorProcessos gerenciador)
     {
         // Processo filho para impressão
         imprimirTempoMedioProcessos(gerenciador);
-        imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+        imprimeTabelaProcessos(&gerenciador.TabelaProcessos, gerenciador.algoritmoEscalonamento);
         imprimirTodosProcessos(&gerenciador);
         imprimirFilas(&gerenciador);
         exit(0); // Finaliza o processo de impressão
@@ -223,7 +222,7 @@ void lerArquivo(char *retorno)
     char str[MAX_CMD_LEN];
 
     // atribua ao arquivo o Controle.txt
-    arquivo = fopen("./entry/Controle.txt", "r");
+    arquivo = fopen("./entry/init.txt", "r");
 
     if (arquivo == NULL)
     {
