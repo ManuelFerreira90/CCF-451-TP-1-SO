@@ -138,6 +138,9 @@ void imprimeProcesso(ProcessoSimulado *processo)
 // Função para imprimir a tabela de processos
 void imprimeTabelaProcessos(tabelaProcessos *tabela)
 {
+    printf("========================================================================\n");
+    printf("|                            Tabela De Processos                       |\n");
+    printf("========================================================================\n");
     printf("+-------------+----------------+------------+-------------+------------+\n");
     printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
     printf("+-------------+----------------+------------+-------------+------------+\n");

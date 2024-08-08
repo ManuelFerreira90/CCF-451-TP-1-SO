@@ -63,3 +63,30 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai, i
 
     return novoProcesso;
 }
+
+
+void imprimirProcesso(ProcessoSimulado *processo)
+{
+    printf("=============================================\n");
+    printf("|              PROCESSO                     |\n");
+    printf("=============================================\n");
+    printf("| %-20s | %-18d |\n", "ID", processo->ID_Processo);
+    printf("| %-20s | %-18d |\n", "ID do processo pai", processo->ID_Processo_Pai);
+    printf("| %-20s | %-18d |\n", "PC", processo->PC);
+    printf("| %-20s | %-18d |\n", "Estado", processo->EstadosProcesso);
+    printf("| %-20s | %-18d |\n", "Prioridade", processo->prioridade);
+    printf("| %-21s | %-18d |\n", "Tempo de início", processo->tempoInicio.valor);
+    printf("| %-20s | %-18d |\n", "Tempo de CPU", processo->tempoCPU.valor);
+    printf("| %-22s | %-18d |\n", "Qtd de instruções", processo->quantidadeInstrucao);
+    printf("| %-22s | %-18s |\n", "Conj. de instruções", processo->conjuntoInstrucoes);
+    printf("| %-20s | %-18d |\n", "Qtd de inteiros", processo->quantidadeInteiros);
+    printf("| %-21s |", "Memória");
+
+    for (int i = 0; i < processo->quantidadeInteiros; i++)
+    {
+        if (i > 0) printf(" ");
+        printf(" %d", processo->memoria[i]);
+    }
+    
+    printf("\n=============================================\n");
+}

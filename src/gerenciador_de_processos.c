@@ -108,12 +108,15 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
     {
         retirarTabelaProcessos(&(gerenciador->TabelaProcessos), processoIndex);
         gerenciador->processosEmExecucao[indexCPU] = -1;
-        incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
+        //incrementarTempo(&(gerenciador->tempoMedio), &processo->tempoCPU);
+        gerenciador->tempoMedio.valor += processo->tempoCPU.valor;
         gerenciador->processosTerminados += 1;
         iniciarCPU(&gerenciador->cpus[indexCPU]);
         free(processo->memoria);
         free(processo->conjuntoInstrucoes);
         free(processo);
+
+        printf("Tempo de CPU do processo: %d\n", processo->tempoCPU.valor);
     }
 }
 
@@ -179,7 +182,6 @@ void iniciarCPU(CPU *cpu)
 
     cpu->contadorPrograma = 0;
 
-    // iniciarVetorMemoria(gerenciador);
     cpu->memoriaVect = NULL;
     setTempo(&(cpu->fatiaTempo), QUANTUM);
 }
@@ -220,6 +222,7 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     inicializarTempo(&gerenciador->tempoMedio);
 
     gerenciador->processosTerminados = 0;
+    gerenciador->tempoMedio.valor = 0;
     gerenciador->algoritmoEscalonamento = escalonador;
 
     inicializarTabelaProcessos(&(gerenciador->TabelaProcessos));
@@ -580,5 +583,13 @@ void colocaProcessoNaCPURoundRobin(GerenciadorProcessos *gerenciador, int cpuInd
     if (processoId != -1)
     {
         atualizarProcessoEmExecucao(gerenciador, cpuIndex, processoId);
+    }
+}
+
+void imprimirTodosProcessos(GerenciadorProcessos *gerenciador)
+{
+    for (int i = 0; i < gerenciador->TabelaProcessos.ultimoProcessoIndex; i++)
+    {
+        imprimirProcesso(gerenciador->TabelaProcessos.listaProcessos[i]);
     }
 }

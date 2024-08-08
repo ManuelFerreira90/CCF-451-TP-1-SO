@@ -201,7 +201,7 @@ void processoImpressao(GerenciadorProcessos gerenciador)
         // Processo filho para impressão
         imprimirTempoMedioProcessos(gerenciador);
         imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
-
+        imprimirTodosProcessos(&gerenciador);
         exit(0); // Finaliza o processo de impressão
     }
     else if (print_pid > 0)
