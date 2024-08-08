@@ -10,7 +10,3 @@ void setTempo(Tempo *tempo, int valor)
     tempo->valor = valor;
 }
 
-void incrementarTempo(Tempo *tempo, Tempo *adicional)
-{
-    tempo->valor = tempo->valor + adicional->valor;
-}

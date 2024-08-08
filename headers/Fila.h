@@ -27,6 +27,7 @@ int desenfileirarDinamica(FilaDinamica *fila);
 int frenteFilaDinamica(FilaDinamica *fila);
 void liberarFilaDinamica(FilaDinamica *fila);
 void imprimirFilaDinamica(FilaDinamica *fila);
+
 //---------------------------------------------------------------------------------------
 
 #endif
