@@ -148,7 +148,7 @@ int processoControle()
                     // printf("\nEscalonador Round Robin\n");
                     escalonadorRoundRobin(&gerenciador);
                 }
-                incrementarTempoCPU(&gerenciador);
+                //incrementarTempoCPU(&gerenciador);
 
                 printf("Fim de uma unidade de tempo.\n");
                 unidadeTempo++;

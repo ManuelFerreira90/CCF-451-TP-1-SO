@@ -467,20 +467,10 @@ int trocaDeContexto(GerenciadorProcessos *gerenciador, int i)
     if (processoEmExecucaoID != -1)
     {
         // Verifica se há um processo em execução
-        ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[processoEmExecucaoID];
+        ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoEmExecucaoID);
 
         if (gerenciador->cpus[i].fatiaTempo.valor == 0)
         {
-            // Verifica a fatia de tempo do processo
-            if (gerenciador->algoritmoEscalonamento == 0)
-            {
-                if (processo->prioridade < NUM_PRIORIDADES - 1)
-                {
-                    // Aumenta a prioridade se não for a máxima
-                    processo->prioridade++;
-                }
-            }
-
             // Remove o processo da execução
             gerenciador->processosEmExecucao[i] = -1;
 
@@ -526,7 +516,7 @@ void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador)
         idProcesso = trocaDeContexto(gerenciador, i);
         if (idProcesso != -1)
         {
-            ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[idProcesso];
+            ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, idProcesso);
             if (processo->prioridade < NUM_PRIORIDADES - 1)
             {
                 processo->prioridade++;
