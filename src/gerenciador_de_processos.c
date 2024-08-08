@@ -112,11 +112,9 @@ void comandoT(GerenciadorProcessos *gerenciador, int indexCPU)
         gerenciador->tempoMedio.valor += processo->tempoCPU.valor;
         gerenciador->processosTerminados += 1;
         iniciarCPU(&gerenciador->cpus[indexCPU]);
-        free(processo->memoria);
-        free(processo->conjuntoInstrucoes);
-        free(processo);
-
-        printf("Tempo de CPU do processo: %d\n", processo->tempoCPU.valor);
+        // free(processo->memoria);
+        // free(processo->conjuntoInstrucoes);
+        // free(processo);
     }
 }
 
