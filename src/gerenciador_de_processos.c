@@ -280,7 +280,9 @@ void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador)
 
 void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador)
 {
+    if(gerenciador.tempoMedio.valor){
     gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
+    }
     printf("\n");
     printTableBorder();
     printf("Processos Terminados: %d\n", gerenciador.processosTerminados);
