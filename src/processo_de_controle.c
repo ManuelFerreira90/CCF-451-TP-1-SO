@@ -157,8 +157,7 @@ int processoControle()
                     // Executar o escalonador Round Robin
                     escalonadorRoundRobin(&gerenciador);
                 }
-                // Incrementar o tempo de CPU após o escalonamento
-                incrementarTempoCPU(&gerenciador);
+                //incrementarTempoCPU(&gerenciador);
 
                 printf("Fim de uma unidade de tempo.\n");
                 unidadeTempo++;

@@ -7,7 +7,6 @@
 #define TABLE_WIDTH 40       // Largura da tabela usada para exibição de dados.
 #define MAX_CMD_LEN 100      // Tamanho máximo permitido para comandos de entrada.
 #define NUM_PRIORIDADES 4    // Número de níveis de prioridade para o escalonador de processos.
-#define NUM_CPUs 4           // Número de CPUs disponíveis para execução dos processos.
 #define QUANTUM 10           // Quantum de tempo utilizado no escalonador Round Robin.
 
 #include <sys/types.h>

@@ -23,7 +23,7 @@ void enfileirarDinamica(FilaDinamica *fila, int item)
     Node *novoNode = (Node *)malloc(sizeof(Node));  // Aloca memória para o novo nó
     if (novoNode == NULL)
     {
-        // Caso ocorra um erro de alocação de memória, o programa é encerrado
+        printf("Erro: não foi possível alocar memória!\n");
         exit(EXIT_FAILURE);
     }
     novoNode->dado = item;      // Define o valor do novo nó
