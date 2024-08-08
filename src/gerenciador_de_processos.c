@@ -357,9 +357,9 @@ void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador)
 // Formata a saída para melhor apresentação.
 void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador)
 {
-
+    if(gerenciador.processosTerminados != 0){
     gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
-
+    }
     printf("\n");
     printTableBorder(); // Imprime a borda da tabela para formatação.
 
