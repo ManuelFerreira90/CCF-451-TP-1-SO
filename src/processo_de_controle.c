@@ -6,6 +6,8 @@
 // TODO: @Tarik 1. Implementar função para imprimir cada processo com usa memória e tempo de CPU
 // TODO: @Tarik 2. Implementar função para as filas de prioridades ou fila de round robin, confome a escolha inicial do escalonamento
 
+void processoImpressao(GerenciadorProcessos gerenciador);
+
 int processoControle()
 {
     int fd[2], fd_filho[2]; /* Descritores de arquivo para o Pipe */
@@ -164,24 +166,7 @@ int processoControle()
             {
                 printf("\nImprimindo tempo médio de resposta e finalizando.\n");
 
-                pid_t print_pid = fork();
-                if (print_pid == 0)
-                {
-                    // Processo filho para impressão
-                    imprimirTempoMedioProcessos(gerenciador);
-                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
-
-                    exit(0); // Finaliza o processo de impressão
-                }
-                else if (print_pid > 0)
-                {
-                    // Processo pai espera o filho terminar
-                    wait(NULL);
-                }
-                else
-                {
-                    perror("fork");
-                }
+                processoImpressao(gerenciador);
                 break;
             }
             case ' ':
@@ -206,6 +191,30 @@ int processoControle()
     }
 
     return 0;
+}
+
+void processoImpressao(GerenciadorProcessos gerenciador)
+{
+    pid_t print_pid = fork();
+    if (print_pid == 0)
+    {
+        // Processo filho para impressão
+        imprimirTempoMedioProcessos(gerenciador);
+        imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+
+        exit(0); // Finaliza o processo de impressão
+    }
+    else if (print_pid > 0)
+    {
+        // Processo pai espera o filho terminar
+        printf("Esperando processo de impressão terminar...\n");
+        wait(NULL);
+    }
+    else
+    {
+        printf("Erro ao criar processo de impressão.\n");
+        perror("fork");
+    }
 }
 
 void lerArquivo(char *retorno)
