@@ -277,8 +277,9 @@ void iniciarFilaDePrioridades(GerenciadorProcessos *gerenciador)
 
 void imprimirTempoMedioProcessos(GerenciadorProcessos gerenciador)
 {
-    if(gerenciador.tempoMedio.valor){
-    gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
+    if (gerenciador.tempoMedio.valor)
+    {
+        gerenciador.tempoMedio.valor = gerenciador.tempoMedio.valor / gerenciador.processosTerminados;
     }
     printf("\n");
     printTableBorder();
@@ -585,5 +586,38 @@ void imprimirTodosProcessos(GerenciadorProcessos *gerenciador)
     for (int i = 0; i < gerenciador->TabelaProcessos.ultimoProcessoIndex; i++)
     {
         imprimirProcesso(gerenciador->TabelaProcessos.listaProcessos[i]);
+    }
+}
+
+void imprimirFilas(GerenciadorProcessos *gerenciador)
+{
+    if (gerenciador->algoritmoEscalonamento == 0)
+    {
+        printf("\n===========================================================\n");
+        printf("|      Filas usadas no algoritmo de escalonamento          |\n");
+        printf("|                 Filas De Prioridades                     |\n");
+        printf("===========================================================\n");
+        for (int i = 0; i < NUM_PRIORIDADES; i++)
+        {
+            printf("Fila de Prontos da prioridade %d: \n", i);
+            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+            printf("\n");
+            printf("Fila de Bloqueados da prioridade %d: \n", i);
+            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+            printf("\n");
+        }
+    }
+    else if (gerenciador->algoritmoEscalonamento == 1)
+    {
+        printf("\n===========================================================\n");
+        printf("|      Filas usadas no algoritmo de escalonamento         |\n");
+        printf("|                     Round Robin                         |\n");
+        printf("===========================================================\n");
+        printf("Fila de Prontos: \n");
+        imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto));
+        printf("\n");
+        printf("Fila de Bloqueados: \n");
+        imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaBloqueado));
+        printf("\n");
     }
 }

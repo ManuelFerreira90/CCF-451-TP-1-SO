@@ -202,12 +202,12 @@ void processoImpressao(GerenciadorProcessos gerenciador)
         imprimirTempoMedioProcessos(gerenciador);
         imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
         imprimirTodosProcessos(&gerenciador);
+        imprimirFilas(&gerenciador);
         exit(0); // Finaliza o processo de impressão
     }
     else if (print_pid > 0)
     {
         // Processo pai espera o filho terminar
-        printf("Esperando processo de impressão terminar...\n");
         wait(NULL);
     }
     else

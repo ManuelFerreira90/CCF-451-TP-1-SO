@@ -70,6 +70,7 @@ void escalonadorRoundRobin(GerenciadorProcessos *gerenciador);
 void trocaDeContextoRoundRobin(GerenciadorProcessos *gerenciador);
 void colocaProcessoNaCPURoundRobin(GerenciadorProcessos *gerenciador, int cpuIndex);
 void imprimirTodosProcessos(GerenciadorProcessos *gerenciador);
+void imprimirFilas(GerenciadorProcessos *gerenciador);
 //---------------------------------------------------------------------------------------
 
 #endif // GERENCIADOR_PROCESSOS_H
