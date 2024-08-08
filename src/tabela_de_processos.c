@@ -51,14 +51,12 @@ void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
 
     if (foundIndex == -1)
     {
-        printf("Processo com ID %d não encontrado.\n", ID_Processo);
         return;
     }
 
     // Libera a memória alocada para o processo
-    // free(tabela->listaProcessos[foundIndex]->memoria);
-    // free(tabela->listaProcessos[foundIndex]->conjuntoInstrucoes);
-    // free(tabela->listaProcessos[foundIndex]);
+    free(tabela->listaProcessos[foundIndex]->memoria);
+    free(tabela->listaProcessos[foundIndex]);
 
     // Desloca os processos após o índice encontrado para a esquerda
     for (int i = foundIndex; i < tabela->ultimoProcessoIndex; i++)
@@ -75,8 +73,6 @@ void retirarTabelaProcessos(tabelaProcessos *tabela, int ID_Processo)
     {
         tabela->primeiroProcessoIndex = tabela->ultimoProcessoIndex = -1;
     }
-
-    printf("Processo com ID %d removido.\n", ID_Processo);
 }
 
 int *getIndicesEstadoTabelaProcessos(tabelaProcessos *tabela, Estados estado, int *tamanhoLista)
@@ -141,6 +137,9 @@ void imprimeProcesso(ProcessoSimulado *processo)
 // Função para imprimir a tabela de processos
 void imprimeTabelaProcessos(tabelaProcessos *tabela)
 {
+    printf("========================================================================\n");
+    printf("|                            Tabela De Processos                       |\n");
+    printf("========================================================================\n");
     printf("+-------------+----------------+------------+-------------+------------+\n");
     printf("| ID Processo | ID Processo Pai| PC         | Estado      | Prioridade |\n");
     printf("+-------------+----------------+------------+-------------+------------+\n");

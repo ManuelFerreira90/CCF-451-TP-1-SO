@@ -3,8 +3,10 @@
 #include "../headers/gerenciador_de_processos.h"
 #include "../headers/processoControle.h"
 
-//TODO: @Tarik 1. Implementar função para imprimir cada processo com usa memória e tempo de CPU
-//TODO: @Tarik 2. Implementar função para as filas de prioridades ou fila de round robin, confome a escolha inicial do escalonamento
+// TODO: @Tarik 1. Implementar função para imprimir cada processo com usa memória e tempo de CPU
+// TODO: @Tarik 2. Implementar função para as filas de prioridades ou fila de round robin, confome a escolha inicial do escalonamento
+
+void processoImpressao(GerenciadorProcessos gerenciador);
 
 int processoControle()
 {
@@ -82,7 +84,6 @@ int processoControle()
                 else if (entradaUsu == 2)
                 {
                     lerArquivo(stringEntrada);
-
                 }
                 break;
             }
@@ -112,7 +113,7 @@ int processoControle()
         ssize_t bytes_read;
 
         /* Inicializar o Gerenciador de Processos */
-        int comecou = 0;
+        int unidadeTempo = 0;
         int numero_CPUS, tipo_escalonamento;
 
         // Ler o número de CPUs e o tipo de escalonamento do pipe
@@ -137,6 +138,7 @@ int processoControle()
             switch (str_recebida[0])
             {
             case 'U':
+                printf("\nUnidade de tempo: %d\n", unidadeTempo);
                 if (tipo_escalonamento == 0)
                 {
                     // printf("\nEscalonador de Fila de Prioridades\n");
@@ -149,7 +151,8 @@ int processoControle()
                 }
                 incrementarTempoCPU(&gerenciador);
 
-                printf("\n Fim de uma unidade de tempo.\n");
+                printf("Fim de uma unidade de tempo.\n");
+                unidadeTempo++;
                 break;
             case 'I':
                 printf("\nImprimindo estado atual do sistema.\n");
@@ -163,24 +166,7 @@ int processoControle()
             {
                 printf("\nImprimindo tempo médio de resposta e finalizando.\n");
 
-                pid_t print_pid = fork();
-                if (print_pid == 0)
-                {
-                    // Processo filho para impressão
-                    imprimirTempoMedioProcessos(gerenciador);
-                    imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
-
-                    exit(0); // Finaliza o processo de impressão
-                }
-                else if (print_pid > 0)
-                {
-                    // Processo pai espera o filho terminar
-                    wait(NULL);
-                }
-                else
-                {
-                    perror("fork");
-                }
+                processoImpressao(gerenciador);
                 break;
             }
             case ' ':
@@ -207,6 +193,30 @@ int processoControle()
     return 0;
 }
 
+void processoImpressao(GerenciadorProcessos gerenciador)
+{
+    pid_t print_pid = fork();
+    if (print_pid == 0)
+    {
+        // Processo filho para impressão
+        imprimirTempoMedioProcessos(gerenciador);
+        imprimeTabelaProcessos(&gerenciador.TabelaProcessos);
+        imprimirTodosProcessos(&gerenciador);
+        exit(0); // Finaliza o processo de impressão
+    }
+    else if (print_pid > 0)
+    {
+        // Processo pai espera o filho terminar
+        printf("Esperando processo de impressão terminar...\n");
+        wait(NULL);
+    }
+    else
+    {
+        printf("Erro ao criar processo de impressão.\n");
+        perror("fork");
+    }
+}
+
 void lerArquivo(char *retorno)
 {
     FILE *arquivo;
@@ -229,7 +239,6 @@ void lerArquivo(char *retorno)
         }
 
         fclose(arquivo);
-       
     }
 }
 

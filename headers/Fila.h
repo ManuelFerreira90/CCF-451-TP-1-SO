@@ -3,12 +3,14 @@
 
 #include "./tempo.h"
 
-typedef struct node {
+typedef struct node
+{
     int dado;
     struct node *proximo;
 } Node;
 
-typedef struct {
+typedef struct
+{
     Node *frente;
     Node *tras;
     int tamanho;
