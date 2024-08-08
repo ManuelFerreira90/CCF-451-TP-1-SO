@@ -80,11 +80,16 @@ void liberarFilaDinamica(FilaDinamica *fila)
 void imprimirFilaDinamica(FilaDinamica *fila)
 {
     printf("Tamanho da fila: %d\n", fila->tamanho);
+    if (fila->tamanho == 0)
+    {
+        return;
+    }
+
     Node *tempNode = fila->frente;
     printf("Fila: ");
     while (tempNode != NULL)
     {
-        printf("%d ", tempNode->dado);
+        printf("-> %d ", tempNode->dado);
         tempNode = tempNode->proximo;
     }
     printf("\n");

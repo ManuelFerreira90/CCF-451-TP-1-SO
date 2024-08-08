@@ -13,8 +13,13 @@ typedef struct CPU
     ProcessoSimulado *processoEmExecucao;
 } CPU;
 
+// Declarações de funções e estruturas
+//---------------------------------------------------------------------------------------
+
 void iniciarCPU(CPU *cpu);
 void imprimeCPU(CPU cpu, int index);
 void printTableBorder();
+
+//---------------------------------------------------------------------------------------
 
 #endif
