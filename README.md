@@ -1,4 +1,11 @@
-# Gerenciador de Processos Simulados
+# Trabalho Prático 2 - Gerenciador de Processos Simulados
+
+## Alunos:
+Álvaro Gomes da Silva Neto - 5095 
+Danilo Matos de Oliveira - 5073 
+Ítallo Winícios Ferreira Cardoso - 5101 
+Manuel Ferreira Ribeiro Di Simões - 5091 
+Tarik Salles Paiva - 5059
 
 ## Descrição
 
