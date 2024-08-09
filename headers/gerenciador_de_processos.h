@@ -118,6 +118,8 @@ void colocaProcessoNaCPURoundRobin(GerenciadorProcessos *gerenciador, int cpuInd
 void imprimirTodosProcessos(GerenciadorProcessos *gerenciador);
 void imprimirFilas(GerenciadorProcessos *gerenciador);
 
+// Retorna o tempo de fatia de tempo para um processo com base na prioridade.
+int getFatiaTempoPrioridade(int prioridade);
 //---------------------------------------------------------------------------------------
 
 #endif // GERENCIADOR_PROCESSOS_H

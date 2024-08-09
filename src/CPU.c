@@ -26,6 +26,13 @@ void imprimeCPU(CPU cpu, int index)
     const char *estadoCPU = (cpu.processoEmExecucao != NULL) ? "Ocupada" : "Vazia";
     printf("| %-25s | %-8s |\n", "Estado CPU", estadoCPU);
     printTableBorder();
+
+    // Exibe o ID do processo em execução, se houver
+    if (cpu.processoEmExecucao != NULL)
+    {
+        printf("| %-25s | %8d |\n", "ID do processo", cpu.processoEmExecucao->ID_Processo);
+        printTableBorder();
+    }
     
     // Exibe o valor atual do contador de programa
     printf("| %-25s | %8d |\n", "Contador de programa", cpu.contadorPrograma);
