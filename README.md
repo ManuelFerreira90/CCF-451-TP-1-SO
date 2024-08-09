@@ -2,13 +2,9 @@
 
 ## Alunos:
 <p>Álvaro Gomes da Silva Neto - 5095
-
 <br>Danilo Matos de Oliveira - 5073 
-
 <br>Ítallo Winícios Ferreira Cardoso - 5101 
-
 <br>Manuel Ferreira Ribeiro Di Simões - 5091 
-
 <br>Tarik Salles Paiva - 5059</p>
 
 ## Descrição
