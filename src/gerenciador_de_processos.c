@@ -8,20 +8,19 @@
 void adicionarProcessoProntoFilaDePrioridade(GerenciadorProcessos *gerenciador, int processoIndex)
 {
     // Obtém a prioridade do processo da tabela de processos
-    int prioridade = gerenciador->TabelaProcessos.listaProcessos[processoIndex]->prioridade;
+    ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoIndex);
 
     // Enfileira o processo na fila de prontos correspondente à sua prioridade
-    enfileirarDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[prioridade]), processoIndex);
+    enfileirarDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[processo->prioridade]), processoIndex);
 
     // Atualiza o estado do processo para "Pronto"
-    gerenciador->TabelaProcessos.listaProcessos[processoIndex]->EstadosProcesso = Pronto;
+    processo->EstadosProcesso = Pronto;
 }
 
 // Adiciona um processo à fila de bloqueados, baseado na sua prioridade
 void adicionarProcessoBloqueadoFilaDePrioridade(GerenciadorProcessos *gerenciador, int processoIndex)
 {
     // Obtém a prioridade do processo da tabela de processos
-    // int prioridade = gerenciador->TabelaProcessos.listaProcessos[processoIndex]->prioridade;
     ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoIndex);
 
     // TODO : avaliar aumento de prioridade
@@ -594,7 +593,7 @@ int trocaDeContexto(GerenciadorProcessos *gerenciador, int i)
     if (processoEmExecucaoID != -1)
     {
         // Verifica se há um processo em execução na CPU.
-        ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[processoEmExecucaoID];
+        ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoEmExecucaoID);
 
         // Verifica se a fatia de tempo expirou.
         if (gerenciador->cpus[i].fatiaTempo.valor == 0)
@@ -651,7 +650,7 @@ void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador)
         idProcesso = trocaDeContexto(gerenciador, i);
         if (idProcesso != -1)
         {
-            ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[idProcesso];
+            ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, idProcesso);
             
             // Aumenta a prioridade do processo se não for a máxima.
             if (processo->prioridade < NUM_PRIORIDADES - 1)
@@ -749,7 +748,7 @@ void imprimirFilas(GerenciadorProcessos *gerenciador)
             imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
             printf("\n");
             printf("Fila de Bloqueados da prioridade %d: \n", i);
-            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasBloqueados[i]));
             printf("\n");
         }
     }
