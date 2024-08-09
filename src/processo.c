@@ -119,7 +119,7 @@ void imprimirProcesso(ProcessoSimulado *processo)
     printf("| %-20s | %-18s |\n", "Estado", estado);                                    // Exibe o estado do processo
     if (processo->prioridade != -1)                                                     // Verifica se o escalonamento por prioridade foi usado
     {
-        printf("| %-20s | %-18d |\n", "Prioridade", processo->prioridade);              // Exibe a prioridade do processo
+        printf("| %-20s | %-18s |\n", "Prioridade", getInfoPrioridade(processo->prioridade));              // Exibe a prioridade do processo
     }
     printf("| %-21s | %-18d |\n", "Tempo de início", processo->tempoInicio.valor);      // Exibe o tempo de início
     printf("| %-20s | %-18d |\n", "Tempo de CPU", processo->tempoCPU.valor);            // Exibe o tempo de CPU
@@ -137,4 +137,28 @@ void imprimirProcesso(ProcessoSimulado *processo)
     }
 
     printf("\n=============================================\n");
+}
+
+char* getInfoPrioridade(int prioridade)
+{
+    char* prioridadeString;
+    switch (prioridade)
+    {
+    case 0:
+        prioridadeString = "Muito Alta";
+        break;
+    case 1:
+        prioridadeString = "Alta";
+        break;
+    case 2:
+        prioridadeString = "Média";
+        break;
+    case 3:
+        prioridadeString = "Baixa";
+        break;
+    default:
+        break;
+    }
+
+    return prioridadeString;
 }

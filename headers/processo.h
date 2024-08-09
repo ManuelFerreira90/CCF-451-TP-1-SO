@@ -40,6 +40,9 @@ ProcessoSimulado *criarNovoProcessoAPartirdoPai(ProcessoSimulado *processoPai, i
 // Imprime as informações detalhadas de um processo simulado.
 void imprimirProcesso(ProcessoSimulado *processo);
 
+// Retorna String para representar a prioridade do processo
+char* getInfoPrioridade(int prioridade);
+
 //---------------------------------------------------------------------------------------
 
 #endif // PROCESSO_H

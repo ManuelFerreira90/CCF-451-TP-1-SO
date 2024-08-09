@@ -135,12 +135,12 @@ void imprimeProcesso(ProcessoSimulado *processo, int algoritmoEscalonamento)
     {
         if (algoritmoEscalonamento == 0)
         {
-            printf("| %-11d | %-14d | %-10d | %-12s | %-10d |\n",
+            printf("| %-11d | %-14d | %-10d | %-12s | %-10s |\n",
                    processo->ID_Processo,
                    processo->ID_Processo_Pai,
                    processo->PC,
                    estadoToString(processo->EstadosProcesso),
-                   processo->prioridade);
+                   getInfoPrioridade(processo->prioridade));
         }
         else if (algoritmoEscalonamento == 1)
         {
