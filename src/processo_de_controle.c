@@ -129,7 +129,7 @@ int processoControle()
 
         // Iniciar o Gerenciador de Processos com os parâmetros recebidos
         GerenciadorProcessos gerenciador;
-        iniciarGerenciadorProcessos(&gerenciador, "./entry/input1.txt", getpid(), numero_CPUS, tipo_escalonamento);
+        iniciarGerenciadorProcessos(&gerenciador, "./entry/input1.txt", 0, numero_CPUS, tipo_escalonamento);
 
         /* No processo filho, ler do Pipe e processar comandos */
         close(fd[1]); // Fechar o descritor de escrita do Pipe no processo filho
@@ -231,7 +231,6 @@ void processoImpressao(GerenciadorProcessos gerenciador)
     else
     {
         // Caso ocorra um erro ao tentar criar o processo filho para impressão
-        printf("Erro ao criar processo de impressão.\n");
         perror("fork");
     }
 }
