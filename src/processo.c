@@ -21,10 +21,12 @@ ProcessoSimulado *inicializaProcesso(char *conjuntoInstrucoes, int quantidadeIns
     if (algoritmoEscalonamento == 0)
     {
         processo->prioridade = 0;
+        processo->quantum = prioridade0;
     }
     else
     {
         processo->prioridade = -1;  // Se não for usado o escalonamento por prioridade
+        processo->quantum = QUANTUM;  // Define o quantum de tempo
     }
 
     processo->memoria = NULL;  // Inicialmente, a memória do processo é NULL

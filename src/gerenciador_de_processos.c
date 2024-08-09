@@ -1,5 +1,8 @@
 #include "../headers/gerenciador_de_processos.h"
 
+// TODO : Se o processo for bloqueado, antes de expirar seu quantum alocado, a sua prioridade é aumentada.
+// TODO : Fatia de tempo para cada nível de prioridade.
+
 // Adiciona um processo à fila de prontos, baseado na sua prioridade
 void adicionarProcessoProntoFilaDePrioridade(GerenciadorProcessos *gerenciador, int processoIndex)
 {
@@ -17,13 +20,37 @@ void adicionarProcessoProntoFilaDePrioridade(GerenciadorProcessos *gerenciador, 
 void adicionarProcessoBloqueadoFilaDePrioridade(GerenciadorProcessos *gerenciador, int processoIndex)
 {
     // Obtém a prioridade do processo da tabela de processos
-    int prioridade = gerenciador->TabelaProcessos.listaProcessos[processoIndex]->prioridade;
+    // int prioridade = gerenciador->TabelaProcessos.listaProcessos[processoIndex]->prioridade;
+    ProcessoSimulado *processo = getProcesso(&gerenciador->TabelaProcessos, processoIndex);
+    int prioridade = processo->prioridade;
+
+    // TODO : avaliar aumento de prioridade
+    if (prioridade > 0)
+    {
+        // Aumenta a prioridade do processo em 1
+        prioridade--;
+        switch (processo->prioridade)
+        {
+            case 0:
+                processo->quantum = prioridade0;
+                break;
+            case 1:
+                processo->quantum = prioridade1;
+                break;
+            case 2:
+                processo->quantum = prioridade2;
+                break;
+            case 3:
+                processo->quantum = prioridade3;
+                break;
+        }
+    }
 
     // Enfileira o processo na fila de bloqueados correspondente à sua prioridade
     enfileirarDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasBloqueados[prioridade]), processoIndex);
 
     // Atualiza o estado do processo para "Bloqueado"
-    gerenciador->TabelaProcessos.listaProcessos[processoIndex]->EstadosProcesso = Bloqueado;
+    processo->EstadosProcesso = Bloqueado;
 }
 
 // Move o processo em execução para a fila de bloqueados
@@ -242,13 +269,12 @@ void iniciarVetorMemoria(CPU *cpu)
 // A CPU começa sem um processo em execução e com o contador de programa zerado.
 void iniciarCPU(CPU *cpu)
 {
-    cpu->processoEmExecucao = NULL; // Sem processo em execução inicialmente.
+    cpu->processoEmExecucao = NULL;       // Sem processo em execução inicialmente.
     inicializarTempo(&(cpu->tempoUsado)); // Inicializa o tempo utilizado pela CPU.
 
     cpu->contadorPrograma = 0; // Zera o contador de programa.
 
     cpu->memoriaVect = NULL; // Inicialmente, sem memória associada.
-    setTempo(&(cpu->fatiaTempo), QUANTUM); // Define o tempo de fatia da CPU para QUANTUM.
 }
 
 // Função que retorna o número de linhas no arquivo até o primeiro comando 'F' encontrado.
@@ -331,7 +357,7 @@ void iniciarGerenciadorProcessos(GerenciadorProcessos *gerenciador, char *arquiv
     for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
     {
         gerenciador->processosEmExecucao[i] = -1; // Inicializa todos os processadores como sem processo em execução.
-        iniciarCPU(&gerenciador->cpus[i]); // Inicializa cada CPU.
+        iniciarCPU(&gerenciador->cpus[i]);        // Inicializa cada CPU.
     }
 }
 
@@ -399,7 +425,7 @@ Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha)
     char linha[MAX_CMD_LEN];
     int linhaAtual = 0;
     int achou = 0;
-    
+
     // Lê o arquivo linha por linha.
     while (fgets(linha, sizeof(linha), file) != NULL && !achou)
     {
@@ -489,6 +515,9 @@ void atualizarProcessoEmExecucao(GerenciadorProcessos *gerenciador, int cpuIndex
     // Atualiza a estrutura de gerenciamento de processos.
     gerenciador->processosEmExecucao[cpuIndex] = processoId;
     processo->EstadosProcesso = Execucao;
+
+    // TODO : Verificar se a fatia de tempo é apropriada para o processo.
+    gerenciador->cpus[cpuIndex].fatiaTempo.valor = processo->quantum;
 }
 
 // Imprime uma descrição simplificada de uma instrução de comando.
@@ -525,7 +554,8 @@ void printInstrucaoSimplificada(Instrucao instrucao, int cpuIndex, int processoI
 
 // Executa o processo em cada CPU, processando a próxima instrução.
 // Lê a instrução atual, imprime uma representação simplificada e a processa.
-void executandoProcessoCPU(GerenciadorProcessos *gerenciador){
+void executandoProcessoCPU(GerenciadorProcessos *gerenciador)
+{
     Instrucao instrucao;
     for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
     {
@@ -589,172 +619,186 @@ int trocaDeContexto(GerenciadorProcessos *gerenciador, int i)
                 if (processo->prioridade < NUM_PRIORIDADES - 1)
                 {
                     processo->prioridade++;
+                    switch (processo->prioridade)
+                    {
+                    case 0:
+                        processo->quantum = prioridade0;
+                        break;
+                    case 1:
+                        processo->quantum = prioridade1;
+                        break;
+                    case 2:
+                        processo->quantum = prioridade2;
+                        break;
+                    case 3:
+                        processo->quantum = prioridade3;
+                        break;
+                    }
                 }
+
+                // Remove o processo da CPU e marca-o como pronto.
+                gerenciador->processosEmExecucao[i] = -1;
+                processo->EstadosProcesso = Pronto;
+
+                // Reinicializa a CPU para o próximo ciclo.
+                iniciarCPU(&gerenciador->cpus[i]);
+                return processoEmExecucaoID;
             }
+        }
 
-            // Remove o processo da CPU e marca-o como pronto.
-            gerenciador->processosEmExecucao[i] = -1;
-            processo->EstadosProcesso = Pronto;
+        return -1; // Retorna -1 se não houver troca de contexto.
+    }
 
-            // Reinicializa a CPU para o próximo ciclo.
-            iniciarCPU(&gerenciador->cpus[i]);
-            return processoEmExecucaoID;
+    // Atualiza os dados do processo em execução na CPU especificada.
+    // Atualiza o contador de programa e o tempo de CPU utilizado.
+    void atualizaDadosProcesso(CPU * cpu)
+    {
+        if (cpu->processoEmExecucao != NULL)
+        {
+            cpu->processoEmExecucao->PC = cpu->contadorPrograma;
+            cpu->processoEmExecucao->tempoCPU.valor += cpu->tempoUsado.valor;
         }
     }
 
-    return -1; // Retorna -1 se não houver troca de contexto.
-}
-
-// Atualiza os dados do processo em execução na CPU especificada.
-// Atualiza o contador de programa e o tempo de CPU utilizado.
-void atualizaDadosProcesso(CPU *cpu)
-{
-    if (cpu->processoEmExecucao != NULL)
+    // Incrementa o tempo de CPU usado em cada CPU do gerenciador.
+    void incrementarTempoCPU(GerenciadorProcessos * gerenciador)
     {
-        cpu->processoEmExecucao->PC = cpu->contadorPrograma;
-        cpu->processoEmExecucao->tempoCPU.valor += cpu->tempoUsado.valor;
-    }
-}
-
-// Incrementa o tempo de CPU usado em cada CPU do gerenciador.
-void incrementarTempoCPU(GerenciadorProcessos *gerenciador)
-{
-    for (int x = 0; x < gerenciador->quantidadeCPUs; x++)
-    {
-        gerenciador->cpus[x].tempoUsado.valor += 1;
-    }
-}
-
-// Função principal do escalonador para o algoritmo de filas de prioridades.
-// Troca o contexto dos processos e executa o próximo processo na CPU.
-void escalonadorFilaDePrioridades(GerenciadorProcessos *gerenciador)
-{
-    trocaDeContextoFilaDePrioridade(gerenciador);
-    executandoProcessoCPU(gerenciador);
-}
-
-// Troca o contexto dos processos em todas as CPUs utilizando o algoritmo de filas de prioridades.
-// Processos são re-enfileirados com prioridade atualizada.
-void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador)
-{
-    int idProcesso;
-    for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
-    {
-        // Troca o contexto do processo atual na CPU e obtém o ID do processo.
-        idProcesso = trocaDeContexto(gerenciador, i);
-        if (idProcesso != -1)
+        for (int x = 0; x < gerenciador->quantidadeCPUs; x++)
         {
-            ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[idProcesso];
-            // Aumenta a prioridade do processo se não for a máxima.
-            if (processo->prioridade < NUM_PRIORIDADES - 1)
+            gerenciador->cpus[x].tempoUsado.valor += 1;
+        }
+    }
+
+    // Função principal do escalonador para o algoritmo de filas de prioridades.
+    // Troca o contexto dos processos e executa o próximo processo na CPU.
+    void escalonadorFilaDePrioridades(GerenciadorProcessos * gerenciador)
+    {
+        trocaDeContextoFilaDePrioridade(gerenciador);
+        executandoProcessoCPU(gerenciador);
+    }
+
+    // Troca o contexto dos processos em todas as CPUs utilizando o algoritmo de filas de prioridades.
+    // Processos são re-enfileirados com prioridade atualizada.
+    void trocaDeContextoFilaDePrioridade(GerenciadorProcessos * gerenciador)
+    {
+        int idProcesso;
+        for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
+        {
+            // Troca o contexto do processo atual na CPU e obtém o ID do processo.
+            idProcesso = trocaDeContexto(gerenciador, i);
+            if (idProcesso != -1)
             {
-                processo->prioridade++;
+                ProcessoSimulado *processo = gerenciador->TabelaProcessos.listaProcessos[idProcesso];
+                // Aumenta a prioridade do processo se não for a máxima.
+                if (processo->prioridade < NUM_PRIORIDADES - 1)
+                {
+                    processo->prioridade++;
+                }
+                // Re-enfileira o processo na fila de prontos com a nova prioridade.
+                enfileirarDinamica(&gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[processo->prioridade], idProcesso);
             }
-            // Re-enfileira o processo na fila de prontos com a nova prioridade.
-            enfileirarDinamica(&gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[processo->prioridade], idProcesso);
-        }
 
-        // Se não há processo em execução na CPU, tenta colocar um novo processo.
-        if (gerenciador->processosEmExecucao[i] == -1)
-        {
-            colocaProcessoNaCPUFilaDePrioridades(gerenciador, i);
+            // Se não há processo em execução na CPU, tenta colocar um novo processo.
+            if (gerenciador->processosEmExecucao[i] == -1)
+            {
+                colocaProcessoNaCPUFilaDePrioridades(gerenciador, i);
+            }
         }
     }
-}
 
-// Função principal do escalonador para o algoritmo Round Robin.
-// Troca o contexto dos processos e executa o próximo processo na CPU.
-void escalonadorRoundRobin(GerenciadorProcessos *gerenciador)
-{
-    trocaDeContextoRoundRobin(gerenciador);
-    executandoProcessoCPU(gerenciador);
-}
-
-// Troca o contexto dos processos em todas as CPUs utilizando o algoritmo Round Robin.
-// Processos são re-enfileirados na fila de prontos.
-void trocaDeContextoRoundRobin(GerenciadorProcessos *gerenciador)
-{
-    int idProcesso;
-    for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
+    // Função principal do escalonador para o algoritmo Round Robin.
+    // Troca o contexto dos processos e executa o próximo processo na CPU.
+    void escalonadorRoundRobin(GerenciadorProcessos * gerenciador)
     {
-        // Troca o contexto do processo atual na CPU e obtém o ID do processo.
-        idProcesso = trocaDeContexto(gerenciador, i);
-        if (idProcesso != -1)
+        trocaDeContextoRoundRobin(gerenciador);
+        executandoProcessoCPU(gerenciador);
+    }
+
+    // Troca o contexto dos processos em todas as CPUs utilizando o algoritmo Round Robin.
+    // Processos são re-enfileirados na fila de prontos.
+    void trocaDeContextoRoundRobin(GerenciadorProcessos * gerenciador)
+    {
+        int idProcesso;
+        for (int i = 0; i < gerenciador->quantidadeCPUs; i++)
         {
-            // Re-enfileira o processo na fila de prontos do Round Robin.
-            enfileirarDinamica(&gerenciador->EstruturaEscalonamento.roundRobin.filaPronto, idProcesso);
+            // Troca o contexto do processo atual na CPU e obtém o ID do processo.
+            idProcesso = trocaDeContexto(gerenciador, i);
+            if (idProcesso != -1)
+            {
+                // Re-enfileira o processo na fila de prontos do Round Robin.
+                enfileirarDinamica(&gerenciador->EstruturaEscalonamento.roundRobin.filaPronto, idProcesso);
+            }
+
+            // Se não há processo em execução na CPU, tenta colocar um novo processo.
+            if (gerenciador->processosEmExecucao[i] == -1)
+            {
+                colocaProcessoNaCPURoundRobin(gerenciador, i);
+            }
+        }
+    }
+
+    // Coloca um processo na CPU especificada utilizando o algoritmo Round Robin.
+    // Desenfileira um processo da fila de prontos e o atribui à CPU.
+    void colocaProcessoNaCPURoundRobin(GerenciadorProcessos * gerenciador, int cpuIndex)
+    {
+        int processoId = -1;
+
+        // Verifica se o índice da CPU é válido.
+        if (cpuIndex < 0 || cpuIndex >= gerenciador->quantidadeCPUs)
+        {
+            return;
         }
 
-        // Se não há processo em execução na CPU, tenta colocar um novo processo.
-        if (gerenciador->processosEmExecucao[i] == -1)
+        // Tenta desenfileirar um processo para a CPU especificada.
+        processoId = desenfileirarDinamica(&gerenciador->EstruturaEscalonamento.roundRobin.filaPronto);
+        if (processoId != -1)
         {
-            colocaProcessoNaCPURoundRobin(gerenciador, i);
+            // Atualiza a CPU com o processo desenfileirado.
+            atualizarProcessoEmExecucao(gerenciador, cpuIndex, processoId);
         }
     }
-}
 
-// Coloca um processo na CPU especificada utilizando o algoritmo Round Robin.
-// Desenfileira um processo da fila de prontos e o atribui à CPU.
-void colocaProcessoNaCPURoundRobin(GerenciadorProcessos *gerenciador, int cpuIndex)
-{
-    int processoId = -1;
-
-    // Verifica se o índice da CPU é válido.
-    if (cpuIndex < 0 || cpuIndex >= gerenciador->quantidadeCPUs)
+    // Imprime informações sobre todos os processos no gerenciador de processos.
+    void imprimirTodosProcessos(GerenciadorProcessos * gerenciador)
     {
-        return;
-    }
-
-    // Tenta desenfileirar um processo para a CPU especificada.
-    processoId = desenfileirarDinamica(&gerenciador->EstruturaEscalonamento.roundRobin.filaPronto);
-    if (processoId != -1)
-    {
-        // Atualiza a CPU com o processo desenfileirado.
-        atualizarProcessoEmExecucao(gerenciador, cpuIndex, processoId);
-    }
-}
-
-// Imprime informações sobre todos os processos no gerenciador de processos.
-void imprimirTodosProcessos(GerenciadorProcessos *gerenciador)
-{
-    for (int i = 0; i < gerenciador->TabelaProcessos.ultimoProcessoIndex; i++)
-    {
-        // Imprime detalhes do processo.
-        imprimirProcesso(gerenciador->TabelaProcessos.listaProcessos[i]);
-    }
-}
-
-// Imprime o estado das filas de prontos e bloqueados conforme o algoritmo de escalonamento.
-// Mostra as filas de prioridades ou o estado das filas Round Robin.
-void imprimirFilas(GerenciadorProcessos *gerenciador)
-{
-    if (gerenciador->algoritmoEscalonamento == 0)
-    {
-        printf("\n===========================================================\n");
-        printf("|      Filas usadas no algoritmo de escalonamento          |\n");
-        printf("|                 Filas De Prioridades                     |\n");
-        printf("===========================================================\n");
-        for (int i = 0; i < NUM_PRIORIDADES; i++)
+        for (int i = 0; i < gerenciador->TabelaProcessos.ultimoProcessoIndex; i++)
         {
-            printf("Fila de Prontos da prioridade %d: \n", i);
-            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+            // Imprime detalhes do processo.
+            imprimirProcesso(gerenciador->TabelaProcessos.listaProcessos[i]);
+        }
+    }
+
+    // Imprime o estado das filas de prontos e bloqueados conforme o algoritmo de escalonamento.
+    // Mostra as filas de prioridades ou o estado das filas Round Robin.
+    void imprimirFilas(GerenciadorProcessos * gerenciador)
+    {
+        if (gerenciador->algoritmoEscalonamento == 0)
+        {
+            printf("\n===========================================================\n");
+            printf("|      Filas usadas no algoritmo de escalonamento          |\n");
+            printf("|                 Filas De Prioridades                     |\n");
+            printf("===========================================================\n");
+            for (int i = 0; i < NUM_PRIORIDADES; i++)
+            {
+                printf("Fila de Prontos da prioridade %d: \n", i);
+                imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+                printf("\n");
+                printf("Fila de Bloqueados da prioridade %d: \n", i);
+                imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+                printf("\n");
+            }
+        }
+        else if (gerenciador->algoritmoEscalonamento == 1)
+        {
+            printf("\n===========================================================\n");
+            printf("|      Filas usadas no algoritmo de escalonamento         |\n");
+            printf("|                     Round Robin                         |\n");
+            printf("===========================================================\n");
+            printf("Fila de Prontos: \n");
+            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto));
             printf("\n");
-            printf("Fila de Bloqueados da prioridade %d: \n", i);
-            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.filaPrioridades.filasProntos[i]));
+            printf("Fila de Bloqueados: \n");
+            imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaBloqueado));
             printf("\n");
         }
     }
-    else if (gerenciador->algoritmoEscalonamento == 1)
-    {
-        printf("\n===========================================================\n");
-        printf("|      Filas usadas no algoritmo de escalonamento         |\n");
-        printf("|                     Round Robin                         |\n");
-        printf("===========================================================\n");
-        printf("Fila de Prontos: \n");
-        imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto));
-        printf("\n");
-        printf("Fila de Bloqueados: \n");
-        imprimirFilaDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaBloqueado));
-        printf("\n");
-    }
-}
