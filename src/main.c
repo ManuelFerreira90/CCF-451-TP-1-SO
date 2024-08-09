@@ -1,4 +1,4 @@
-#include "./headers/processoControle.h"
+#include "../headers/processoControle.h"
 
 int main()
 {
