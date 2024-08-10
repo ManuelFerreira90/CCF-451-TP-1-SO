@@ -90,7 +90,7 @@ void printInstrucaoSimplificada(Instrucao instrucao, int cpuIndex, int processoI
 void iniciarVetorMemoria(CPU *cpu);
 
 // Comandos de controle de simulação (Exemplos: B, D, N, V, A, S, F, R, T)
-void comandoB(GerenciadorProcessos *gerenciador, int tempo);
+void comandoB(GerenciadorProcessos *gerenciador, int indexCPU, int valor);
 void comandoD(CPU *cpu, int index);
 void comandoN(CPU *cpu, int valor);
 void comandoV(CPU *cpu, int index, int valor);

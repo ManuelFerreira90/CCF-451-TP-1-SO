@@ -39,7 +39,7 @@ void adicionarProcessoBloqueadoFilaDePrioridade(GerenciadorProcessos *gerenciado
 }
 
 // Move o processo em execução para a fila de bloqueados
-void comandoB(GerenciadorProcessos *gerenciador, int indexCPU)
+void comandoB(GerenciadorProcessos *gerenciador, int indexCPU, int valor)
 {
     // Obtém o índice do processo em execução na CPU especificada
     int processoIndex = gerenciador->processosEmExecucao[indexCPU];
@@ -63,6 +63,7 @@ void comandoB(GerenciadorProcessos *gerenciador, int indexCPU)
         gerenciador->processosEmExecucao[indexCPU] = -1;
     }
 
+    gerenciador->cpus[indexCPU].processoEmExecucao->tempoBloqueado.valor = valor;
     gerenciador->cpus[indexCPU].processoEmExecucao->PC++;
     // Reinicia a CPU especificada para estar pronta para executar um novo processo
     iniciarCPU(&gerenciador->cpus[indexCPU]);
@@ -219,7 +220,7 @@ void processarComando(GerenciadorProcessos *gerenciador, Instrucao instrucao, in
         break;
     case 'B':
         // Bloqueia o processo em execução, movendo-o para a fila de processos bloqueados.
-        comandoB(gerenciador, indexCPU);
+        comandoB(gerenciador, indexCPU, instrucao.valor);
         break;
     case 'T':
         // Termina o processo atual, removendo-o da tabela de processos e atualizando as métricas.
@@ -796,6 +797,7 @@ void verificarBloqueadosFilaDePrioridades(GerenciadorProcessos *gerenciador)
         FilaDinamica *filaBloqueados = &(gerenciador->EstruturaEscalonamento.filaPrioridades.filasBloqueados[i]);
         Node *atual = filaBloqueados->frente;
 
+        
         while(atual != NULL)
         {
             ProcessoSimulado *processo = getProcesso(gerenciador, atual->dado);
