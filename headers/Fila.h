@@ -42,7 +42,7 @@ void liberarFilaDinamica(FilaDinamica *fila);
 // Imprime todos os elementos da fila.
 void imprimirFilaDinamica(FilaDinamica *fila);
 
-void removerNo(FilaDinamica *fila, int valor);
+void removerNo(FilaDinamica *fila, Node *no);
 //---------------------------------------------------------------------------------------
 
 #endif
