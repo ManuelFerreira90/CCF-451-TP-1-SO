@@ -120,6 +120,8 @@ void imprimirFilas(GerenciadorProcessos *gerenciador);
 
 // Retorna o tempo de fatia de tempo para um processo com base na prioridade.
 int getFatiaTempoPrioridade(int prioridade);
+void verificarBloqueadosFilaDePrioridades(GerenciadorProcessos *gerenciador);
+void verificarBloqueadosRoundRobin(GerenciadorProcessos *gerenciador);
 //---------------------------------------------------------------------------------------
 
 #endif // GERENCIADOR_PROCESSOS_H

@@ -24,6 +24,7 @@ typedef struct
     char *conjuntoInstrucoes;   // Conjunto de instruções que o processo deve executar.
     Tempo tempoInicio;          // Tempo em que o processo foi iniciado.
     Tempo tempoCPU;             // Tempo total de CPU utilizado pelo processo.
+    Tempo tempoBloqueado;       // Tempo total que o processo passou bloqueado.
     int quantum;                // Tempo máximo que o processo pode usar a CPU antes de ser interrompido.
     int quantidadeInstrucao;    // Quantidade de instruções que o processo possui.
 } ProcessoSimulado;

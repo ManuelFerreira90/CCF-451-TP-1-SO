@@ -102,3 +102,33 @@ void imprimirFilaDinamica(FilaDinamica *fila)
     }
     printf("\n");
 }
+
+void removerNo(FilaDinamica *fila, Node *no)
+{
+    if (no == NULL) return;
+
+    if (no == fila->frente)
+    {
+        // Caso o nó seja o primeiro da fila
+        fila->frente = no->proximo;
+    }
+    else
+    {
+        Node *atual = fila->frente;
+        while(atual->proximo != no)
+        {
+            atual = atual->proximo;
+        }
+
+        atual->proximo = no->proximo;
+    }
+
+    if (no == fila->tras)
+    {
+        // Caso o nó seja o último da fila
+        fila->tras = NULL;
+    }
+
+    fila->tamanho--;
+    free(no); // Libera a memória do nó removido
+}

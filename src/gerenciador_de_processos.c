@@ -635,6 +635,7 @@ void incrementarTempoCPU(GerenciadorProcessos *gerenciador)
 // Troca o contexto dos processos e executa o próximo processo na CPU.
 void escalonadorFilaDePrioridades(GerenciadorProcessos *gerenciador)
 {
+    verificarBloqueadosFilaDePrioridades(gerenciador);
     trocaDeContextoFilaDePrioridade(gerenciador);
     executandoProcessoCPU(gerenciador);
 }
@@ -674,6 +675,7 @@ void trocaDeContextoFilaDePrioridade(GerenciadorProcessos *gerenciador)
 // Troca o contexto dos processos e executa o próximo processo na CPU.
 void escalonadorRoundRobin(GerenciadorProcessos *gerenciador)
 {
+    verificarBloqueadosRoundRobin(gerenciador);
     trocaDeContextoRoundRobin(gerenciador);
     executandoProcessoCPU(gerenciador);
 }
@@ -781,5 +783,57 @@ int getFatiaTempoPrioridade(int prioridade)
         return prioridade3;
     default:
         return prioridade0;
+    }
+}
+
+void verificarBloqueadosFilaDePrioridades(GerenciadorProcessos *gerenciador)
+{
+    // Percorrer cada fila de bloqueados de acordo com a prioridade
+    for(int i = 0; i < NUM_PRIORIDADES; i++)
+    {
+        FilaDinamica *filaBloqueados = &(gerenciador->EstruturaEscalonamento.filaPrioridades.filasBloqueados[i]);
+        Node *atual = filaBloqueados->frente;
+
+        while(atual != NULL)
+        {
+            ProcessoSimulado *processo = getProcesso(gerenciador, atual->dado);
+
+            if(processo->tempoBloqueado.valor == 0)
+            {
+                Node *proximo = atual->proximo; // Salva o próximo nó antes de remover o atual
+                removerNo(filaBloqueados, atual);
+                adicionarProcessoProntoFilaDePrioridade(gerenciador, processo->ID_Processo);
+                atual = proximo; // Avança para o próximo nó
+            }
+            else
+            {
+                processo->tempoBloqueado.valor--;
+                atual = atual->proximo; // Avança para o próximo nó
+            }
+        }
+    }
+}
+
+void verificarBloqueadosRoundRobin(GerenciadorProcessos *gerenciador)
+{
+    FilaDinamica *filaBloqueados = &(gerenciador->EstruturaEscalonamento.roundRobin.filaBloqueado);
+    Node *atual = filaBloqueados->frente;
+
+    while(atual != NULL)
+    {
+        ProcessoSimulado *processo = getProcesso(gerenciador, atual->dado);
+
+        if(processo->tempoBloqueado.valor == 0)
+        {
+            Node *proximo = atual->proximo; // Salva o próximo nó antes de remover o atual
+            removerNo(filaBloqueados, atual);
+            enfileirarDinamica(&(gerenciador->EstruturaEscalonamento.roundRobin.filaPronto), processo->ID_Processo);
+            atual = proximo; // Avança para o próximo nó
+        }
+        else
+        {
+            processo->tempoBloqueado.valor--;
+            atual = atual->proximo; // Avança para o próximo nó
+        }
     }
 }
