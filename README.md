@@ -33,6 +33,6 @@ A estrutura do projeto é organizada da seguinte forma:
 Para compilar o código, navegue até o diretório raiz do projeto e utilize o comando abaixo:
 
 ```bash
-make
+make clean
 make run
 ```
