@@ -63,6 +63,7 @@ void comandoB(GerenciadorProcessos *gerenciador, int indexCPU)
         gerenciador->processosEmExecucao[indexCPU] = -1;
     }
 
+    gerenciador->cpus[indexCPU].processoEmExecucao->PC++;
     // Reinicia a CPU especificada para estar pronta para executar um novo processo
     iniciarCPU(&gerenciador->cpus[indexCPU]);
 }
@@ -436,6 +437,7 @@ Instrucao processarLinhaEspecifica(char *caminhoArquivo, int numeroLinha)
             case 'N':
             case 'D':
             case 'F':
+            case 'B':
                 // Comando 'N', 'D' ou 'F' espera um valor inteiro.
                 if (sscanf(linha + 2, "%d", &v1) == 1)
                 {
