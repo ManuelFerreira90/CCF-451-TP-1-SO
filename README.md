@@ -1,4 +1,4 @@
-# Trabalho Prático 2 - Gerenciador de Processos Simulados
+# Trabalho Prático 1 - Gerenciador de Processos Simulados
 
 ## Alunos:
 <p>Álvaro Gomes da Silva Neto - 5095
